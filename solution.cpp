@@ -4,32 +4,30 @@ using namespace std;
 
 class Solution {
 public:
-    int longestConsecutive(vector<int> nums) {
-        if(nums.size()==0) return 0;
-        sort(nums.begin(),nums.end());
-        int sequence_size = 1;
-        int max = 0;
-        int previous = nums[0];
-        for(int num : nums) {
-            if(num-previous == 1) ++sequence_size;
-            else if(num == previous) continue;
-            else {
-                if(sequence_size > max)
-                    max = sequence_size;
-                sequence_size = 1;
-            }
-            previous = num;
+    bool isPalindrome(string s) {
+      int l=0;
+      int r=s.size()-1;
+      transform(s.begin(), s.end(), s.begin(), ::tolower);
+      while(l<r){
+        bool l_isalpha = isalnum(s[l]);
+        bool r_isalpha = isalnum(s[r]);
+        if(l_isalpha && r_isalpha) {
+          if(s[l] != s[r]) return false;
+        } else {
+          if(!l_isalpha) ++l;
+          if(!r_isalpha) --r;
+          continue;
         }
-        if(sequence_size > max)
-            max = sequence_size;
-        return max;
+        ++l;
+        --r;
+      }
+      return true;
     }
 };
 
 
 int main() {
     Solution s;
-    int size = s.longestConsecutive({0,1,1,2,3});
-    cout<<size<<endl;
+    cout<< (s.isPalindrome("A man, a plan, a canal: Panama") ? "string is palindrome" : "string is not palindrome")<<endl;
     return 0;
 }
