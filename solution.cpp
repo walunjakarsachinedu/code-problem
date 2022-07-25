@@ -4,30 +4,36 @@ using namespace std;
 
 class Solution {
 public:
-    bool isPalindrome(string s) {
-      int l=0;
-      int r=s.size()-1;
-      transform(s.begin(), s.end(), s.begin(), ::tolower);
-      while(l<r){
-        bool l_isalpha = isalnum(s[l]);
-        bool r_isalpha = isalnum(s[r]);
-        if(l_isalpha && r_isalpha) {
-          if(s[l] != s[r]) return false;
-        } else {
-          if(!l_isalpha) ++l;
-          if(!r_isalpha) --r;
-          continue;
+    vector<vector<int>> threeSum(vector<int> nums) {
+        sort(nums.begin(), nums.end());
+        vector<vector<int>> res;
+        int size = nums.size();
+        for(int i=0;i<size-1;i++) {
+            int target = -nums[i];
+            int begin = i+1;
+            int end = size-1;
+
+            while(begin < end) {
+                int sum = nums[begin] + nums[end];
+                if(sum < target) ++begin; 
+                else if(sum > target) --end;
+                
+                else {
+                    vector<int> entry = {nums[i], nums[begin], nums[end]};
+                    res.push_back(entry);
+                    while(begin < end && entry[1] == nums[begin]) ++begin;
+                    while(begin < end && entry[2] == nums[end]) --end;
+                }
+            }
+            while(i + 1 < size && nums[i] == nums[i+1]) ++i;
         }
-        ++l;
-        --r;
-      }
-      return true;
+        return res;
     }
 };
 
 
 int main() {
     Solution s;
-    cout<< (s.isPalindrome("A man, a plan, a canal: Panama") ? "string is palindrome" : "string is not palindrome")<<endl;
+    auto v = s.threeSum({-1,0,1,2,-1,-4});
     return 0;
 }
