@@ -4,16 +4,33 @@ using namespace std;
 
 class Solution {
 public:
-    int maxProfit(vector<int>& prices) {
-        int l = 0;
-        int r = 1;
-        int max_profit = 0;
-        while(r < prices.size()) {
-            if(prices[r] > prices[l]) max_profit = max(prices[r] - prices[l],max_profit);
-            else l = r;
-            r++;
+    int bruteForce(string s) {
+        // brute force
+        int maxlen = 0;
+        int size = s.size();
+        for(int i=0;i<size;i++) {
+            set<char> character;
+            for(int j=i;j<size;j++) {
+                if(character.find(s[j]) != character.end()) break;
+                character.insert(s[j]);
+            }
+            maxlen = max((int) character.size(),maxlen);
         }
-        return max_profit;
+        return maxlen;
+    }
+
+    int lengthOfLongestSubstring(string s) {
+        int l = 0;
+        int maxlen = 0;
+        set<char> characters;
+        for(int r=0; r<s.size(); r++) {
+            while(characters.find(s[r]) != characters.end()) 
+                characters.erase(characters.find(s[l++]));
+            characters.insert(s[r]);
+            maxlen = max(maxlen, r-l+1);
+        }
+
+        return maxlen;
     }
 };
 
@@ -21,8 +38,7 @@ public:
 
 int main() {
     Solution s;
-    vector<int> prices = {1,2,4,2,5,7,2,4,9,0,9};
-    int total = s.maxProfit(prices);
-    cout<<"profit : "<<total<<endl;
+    int length = s.lengthOfLongestSubstring("abacd");
+    cout<<"length : "<<length<<endl;
     return 0;
 }
