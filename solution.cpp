@@ -4,32 +4,19 @@ using namespace std;
 
 class Solution {
 public:
-    int bruteForce(string s) {
-        // brute force
+    int characterReplacement(string s, int k) {
+        int l=0;
         int maxlen = 0;
-        int size = s.size();
-        for(int i=0;i<size;i++) {
-            set<char> character;
-            for(int j=i;j<size;j++) {
-                if(character.find(s[j]) != character.end()) break;
-                character.insert(s[j]);
+        vector<int> freq(26,0);
+        for(int r=0;r<s.size();r++) {
+            freq[s[r]-65]++;
+            int maxfreq = *max_element(freq.begin(),freq.end());
+            while((r-l+1)-maxfreq > k) {
+                --freq[s[l]-65];
+                ++l;
             }
-            maxlen = max((int) character.size(),maxlen);
+            maxlen = max(maxlen,r-l+1);
         }
-        return maxlen;
-    }
-
-    int lengthOfLongestSubstring(string s) {
-        int l = 0;
-        int maxlen = 0;
-        set<char> characters;
-        for(int r=0; r<s.size(); r++) {
-            while(characters.find(s[r]) != characters.end()) 
-                characters.erase(characters.find(s[l++]));
-            characters.insert(s[r]);
-            maxlen = max(maxlen, r-l+1);
-        }
-
         return maxlen;
     }
 };
@@ -38,7 +25,8 @@ public:
 
 int main() {
     Solution s;
-    int length = s.lengthOfLongestSubstring("abacd");
+    string str = "AABABBA";
+    int length = s.characterReplacement(str,1);
     cout<<"length : "<<length<<endl;
     return 0;
 }

@@ -1,0 +1,7 @@
+ Longest Repeating Character Replacement
+  - find formula for whether given substring statisfy condition 
+      windowSize - maxfreq <= k
+      where maxfreq = highest freq of element in window
+  - use two pointer keeping track of window
+  - increase size of window until is until it is valid
+  - when become invalid decrease size by moving left pointer
