@@ -4,20 +4,28 @@ using namespace std;
 
 class Solution {
 public:
-    int characterReplacement(string s, int k) {
-        int l=0;
-        int maxlen = 0;
+    bool checkInclusion(string s1, string s2) {
         vector<int> freq(26,0);
-        for(int r=0;r<s.size();r++) {
-            freq[s[r]-65]++;
-            int maxfreq = *max_element(freq.begin(),freq.end());
-            while((r-l+1)-maxfreq > k) {
-                --freq[s[l]-65];
-                ++l;
+        for(int ch : s1) ++freq[ch-97];
+
+        bool isInclusion;
+        vector<int> temp = freq;
+        int l=0;
+        for(int r=0;r<s2.size();r++) {
+            if(temp[s2[r]-97] == 0) {
+               while(temp[s2[r]-97] == 0) ++temp[s2[l++]-97];
             }
-            maxlen = max(maxlen,r-l+1);
+            --temp[s2[r]-97];
+
+            isInclusion = true;
+            for(int f : temp) if(f!=0) {
+                isInclusion = false;
+                break;
+            }
+            
+            if(isInclusion) return true;
         }
-        return maxlen;
+        return false;
     }
 };
 
@@ -25,8 +33,7 @@ public:
 
 int main() {
     Solution s;
-    string str = "AABABBA";
-    int length = s.characterReplacement(str,1);
-    cout<<"length : "<<length<<endl;
+    bool ispermutation = s.checkInclusion("nitin", "nitikntiinc");
+    cout<<(ispermutation ? "is permutation" : "is not permutation")<<endl;
     return 0;
 }
