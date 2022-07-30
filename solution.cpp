@@ -3,29 +3,30 @@ using namespace std;
 
 class Solution {
 public:
-    int evalRPN(vector<string> tokens) {
-        map<string,function<int (int,int)>> operators = {
-                {"+", [](int a, int b) {return a+b;}}, 
-                {"-", [](int a, int b) {return a-b;}}, 
-                {"*", [](int a, int b) {return a*b;}}, 
-                {"/", [](int a, int b) {return a/b;}},
-            };
-        stack<int> st;
-        for(string tk : tokens) {
-            if(operators.find(tk) != operators.end()) {
-                int n2 = st.top(); st.pop();
-                int n1 = st.top(); st.pop();
-                st.push(operators[tk](n1,n2));
+    vector<string> generateParenthesis(int n) {
+        stack<string> st;
+        vector<string> res;
+        st.push("(");
+        while(!st.empty()) {
+            string str = st.top(); st.pop();
+            int l=0,r=0;
+            for(char ch : str)  if(ch == '(') ++l; else ++r;
+            if(l == n) {
+                while(r++ < l) str += ')';
+                res.push_back(str);
+            } else {
+                st.push(str+"(");
+                if(l > r) st.push(str+")");
             }
-            else st.push(stoi(tk));
         }
-        return st.top();
+        return res;
     }
 };
 
 
 int main() {
     Solution s;
-    cout<<s.evalRPN({"10","6","9","3","+","-11","*","/","*","17","+","5","+"})<<endl;
+    vector<string> v = s.generateParenthesis(8);
+    cout<<endl;
     return 0;
 }
