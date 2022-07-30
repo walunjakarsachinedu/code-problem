@@ -3,30 +3,27 @@ using namespace std;
 
 class Solution {
 public:
-    vector<int> maxSlidingWindow(vector<int>nums, int k) {
-        vector<int> res;
-        deque<int> que;
-        for(int l=0,r=0;r<nums.size();) {
-            while(r-l+1 <= k) {
-                while(!que.empty() && nums[que.back()] < nums[r]) 
-                    que.pop_back();
-                que.push_back(r);
-                ++r;
+    bool isValid(string s) {
+        stack<char> st;
+        set<char> left_bracket = {'(','{','['};
+        unordered_map<char,char> matching_bracket = {{'(',')'},{'{','}'},{'[',']'}};
+        for(char br : s) {
+            if(left_bracket.find(br) != left_bracket.end())
+                st.push(br);
+            else {
+                if(!st.empty() && matching_bracket[st.top()] == br) st.pop();
+                else return false;
             }
-            while(!que.empty() && que.front() < l) que.pop_front();
-            res.push_back(nums[que.front()]);
-            ++l;
         }
-        return res;
+        if(!st.empty()) return false;
+        return true;
     }
 };
 
 
-
 int main() {
     Solution s;
-    vector<int> result = s.maxSlidingWindow({1,-1},1);
-    for(int n : result) cout<<n<<" ";
-    cout<<endl;
+    bool b = s.isValid("]");
+    cout<< (b ? "true" : "false") << endl;
     return 0;
 }
