@@ -1,27 +1,23 @@
 #include<bits/stdc++.h>
-#include<iostream>
 using namespace std;
 
 class Solution {
 public:
-    string minWindow(string s, string t) {
-        map<char,int> freq,window;
-        for(char i : t) ++freq[i];
-        int l=0;
-        int have = 0;
-        int needed = freq.size();
-        pair<int,int> res = {0, s.size()};
-        for(int r=0;r<s.size();r++) {
-            ++window[s[r]];
-            if(window[s[r]]==freq[s[r]]) ++have;
-            if(have >= needed) {
-                while(freq[s[l]] == 0 || window[s[l]] > freq[s[l]]) --window[s[l++]];
-                if(r-l < res.second-res.first) res = {l, r};
+    vector<int> maxSlidingWindow(vector<int>nums, int k) {
+        vector<int> res;
+        deque<int> que;
+        for(int l=0,r=0;r<nums.size();) {
+            while(r-l+1 <= k) {
+                while(!que.empty() && nums[que.back()] < nums[r]) 
+                    que.pop_back();
+                que.push_back(r);
+                ++r;
             }
+            while(!que.empty() && que.front() < l) que.pop_front();
+            res.push_back(nums[que.front()]);
+            ++l;
         }
-        for(char ch : t) if(window[ch] < freq[ch])
-            return "";
-        return s.substr(res.first, res.second-res.first+1);
+        return res;
     }
 };
 
@@ -29,7 +25,8 @@ public:
 
 int main() {
     Solution s;
-    string subStr = s.minWindow("A", "AA");
-    cout<<'"'<<subStr<<'"'<<endl;
+    vector<int> result = s.maxSlidingWindow({1,-1},1);
+    for(int n : result) cout<<n<<" ";
+    cout<<endl;
     return 0;
 }
