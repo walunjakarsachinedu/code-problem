@@ -1,29 +1,40 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-class Solution {
+class MinStack {
+private: 
+    vector<int> arr;
+    int min_value = INT_MAX;
+    
 public:
-    bool isValid(string s) {
-        stack<char> st;
-        set<char> left_bracket = {'(','{','['};
-        unordered_map<char,char> matching_bracket = {{'(',')'},{'{','}'},{'[',']'}};
-        for(char br : s) {
-            if(left_bracket.find(br) != left_bracket.end())
-                st.push(br);
-            else {
-                if(!st.empty() && matching_bracket[st.top()] == br) st.pop();
-                else return false;
-            }
-        }
-        if(!st.empty()) return false;
-        return true;
+    MinStack() {}
+    
+    void push(int val) {
+        arr.push_back(val);
+        min_value = min(min_value, val);
+    }
+    
+    void pop() {
+        if(arr.empty()) return;
+        arr.erase(arr.end()-1);
+        min_value = INT_MAX;
+        for(int v : arr) min_value = min(min_value, v);
+    }
+    
+    int top() {
+        return arr.back();
+    }
+    
+    int getMin() {
+        return min_value;
     }
 };
 
 
 int main() {
-    Solution s;
-    bool b = s.isValid("]");
-    cout<< (b ? "true" : "false") << endl;
+    MinStack s;
+    s.push(34);
+    s.push(30);
+    s.pop();
     return 0;
 }
