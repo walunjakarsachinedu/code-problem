@@ -1,40 +1,31 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-class MinStack {
-private: 
-    vector<int> arr;
-    int min_value = INT_MAX;
-    
+class Solution {
 public:
-    MinStack() {}
-    
-    void push(int val) {
-        arr.push_back(val);
-        min_value = min(min_value, val);
-    }
-    
-    void pop() {
-        if(arr.empty()) return;
-        arr.erase(arr.end()-1);
-        min_value = INT_MAX;
-        for(int v : arr) min_value = min(min_value, v);
-    }
-    
-    int top() {
-        return arr.back();
-    }
-    
-    int getMin() {
-        return min_value;
+    int evalRPN(vector<string> tokens) {
+        map<string,function<int (int,int)>> operators = {
+                {"+", [](int a, int b) {return a+b;}}, 
+                {"-", [](int a, int b) {return a-b;}}, 
+                {"*", [](int a, int b) {return a*b;}}, 
+                {"/", [](int a, int b) {return a/b;}},
+            };
+        stack<int> st;
+        for(string tk : tokens) {
+            if(operators.find(tk) != operators.end()) {
+                int n2 = st.top(); st.pop();
+                int n1 = st.top(); st.pop();
+                st.push(operators[tk](n1,n2));
+            }
+            else st.push(stoi(tk));
+        }
+        return st.top();
     }
 };
 
 
 int main() {
-    MinStack s;
-    s.push(34);
-    s.push(30);
-    s.pop();
+    Solution s;
+    cout<<s.evalRPN({"10","6","9","3","+","-11","*","/","*","17","+","5","+"})<<endl;
     return 0;
 }
