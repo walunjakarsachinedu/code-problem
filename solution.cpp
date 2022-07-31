@@ -3,21 +3,15 @@ using namespace std;
 
 class Solution {
 public:
-    vector<string> generateParenthesis(int n) {
-        stack<string> st;
-        vector<string> res;
-        st.push("(");
-        while(!st.empty()) {
-            string str = st.top(); st.pop();
-            int l=0,r=0;
-            for(char ch : str)  if(ch == '(') ++l; else ++r;
-            if(l == n) {
-                while(r++ < l) str += ')';
-                res.push_back(str);
-            } else {
-                st.push(str+"(");
-                if(l > r) st.push(str+")");
+    vector<int> dailyTemperatures(vector<int> temperatures) {
+        stack<int> st;
+        vector<int> res(temperatures.size());
+        for(int i=0;i<temperatures.size();i++) {
+            while(!st.empty() && temperatures[st.top()]<temperatures[i]) {
+                res[st.top()] = i-st.top();
+                st.pop();
             }
+            st.push(i);
         }
         return res;
     }
@@ -26,7 +20,8 @@ public:
 
 int main() {
     Solution s;
-    vector<string> v = s.generateParenthesis(8);
+    vector<int> v = s.dailyTemperatures({30,60,90});
+    for(int i: v) cout<<i<<" ";
     cout<<endl;
     return 0;
 }
