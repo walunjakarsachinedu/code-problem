@@ -3,53 +3,24 @@ using namespace std;
 
 class Solution {
 public:
-    int largestRectangleAreaMySolution(vector<int> heights) {
-        stack<pair<int,int>> st; // pair<index, left-width>
-        int largestArea = 0;
-        for(int i=0;i<heights.size();i++) {
-            int w=0;
-            while(!st.empty() && heights[i] < heights[st.top().first]) {
-                w += st.top().second + 1;
-                int area = (i-st.top().first + st.top().second) * heights[st.top().first];
-                largestArea = max(largestArea, area);
-                st.pop();
+    int search(vector<int> nums, int target) {
+        int l = 0, r = nums.size()-1;
+        while(l <= r) {
+            int mid = r-l/2 + l;
+            if(target == nums[mid]) return mid;
+            else if(target < nums[mid]) {
+                r = --mid;
+            } else {
+                l = ++mid;
             }
-            st.push({i,w});
         }
-
-        for(int i=1;!st.empty();i++) {
-            int area = heights[st.top().first]*(i+st.top().second);
-            largestArea = max(largestArea, area);
-            i+=st.top().second;
-            st.pop();
-        }
-        return largestArea;
-    }
-    int largestRectangleArea(vector<int> heights) {
-        stack<pair<int,int>> st; //pair<index, height>
-        int size = heights.size();
-        int largest_area = 0;
-        for(int i=0;i<size;i++) {
-            int w = i;
-            while(!st.empty() && st.top().second > heights[i]) {
-                w = st.top().first;
-                largest_area = max(largest_area, st.top().second * (i - st.top().first));
-                st.pop();
-            }
-            st.push({w, heights[i]});
-        }
-
-        while(!st.empty()) {
-            largest_area = max(largest_area, st.top().second * (size - st.top().first));
-            st.pop();
-        }
-        return largest_area;
+        return -1;
     }
 };
 
 int main() {
     Solution s;
-    int area = s.largestRectangleArea({2,4});
-    cout<<"largest area is "<< area <<endl;
+    int position = s.search({-1,0,3,5,9,12},2);
+    cout<<"position: "<<position<<endl;
     return 0;
 }
