@@ -3,28 +3,53 @@ using namespace std;
 
 class Solution {
 public:
-    int carFleet(int target, vector<int> position, vector<int> speed) {
-        int size = position.size();
-        vector<pair<int,int>> cars;
-        for(int i=0;i<size;i++) cars.push_back({position[i],speed[i]});
-        sort(cars.begin(),cars.end());
-
-        stack<pair<int,int>> st;
-        st.push(cars[size-1]);
-        for(int i=size-2;i>=0;i--) {
-            pair<int,int> c1 = st.top();
-            pair<int,int> c2 = cars[i];
-            double t1 = double (target - c1.first) / c1.second;
-            double t2 = double (target - c2.first) / c2.second;
-            if(t2 > t1) st.push(cars[i]);
+    int largestRectangleAreaMySolution(vector<int> heights) {
+        stack<pair<int,int>> st; // pair<index, left-width>
+        int largestArea = 0;
+        for(int i=0;i<heights.size();i++) {
+            int w=0;
+            while(!st.empty() && heights[i] < heights[st.top().first]) {
+                w += st.top().second + 1;
+                int area = (i-st.top().first + st.top().second) * heights[st.top().first];
+                largestArea = max(largestArea, area);
+                st.pop();
+            }
+            st.push({i,w});
         }
-        return st.size();
+
+        for(int i=1;!st.empty();i++) {
+            int area = heights[st.top().first]*(i+st.top().second);
+            largestArea = max(largestArea, area);
+            i+=st.top().second;
+            st.pop();
+        }
+        return largestArea;
+    }
+    int largestRectangleArea(vector<int> heights) {
+        stack<pair<int,int>> st; //pair<index, height>
+        int size = heights.size();
+        int largest_area = 0;
+        for(int i=0;i<size;i++) {
+            int w = i;
+            while(!st.empty() && st.top().second > heights[i]) {
+                w = st.top().first;
+                largest_area = max(largest_area, st.top().second * (i - st.top().first));
+                st.pop();
+            }
+            st.push({w, heights[i]});
+        }
+
+        while(!st.empty()) {
+            largest_area = max(largest_area, st.top().second * (size - st.top().first));
+            st.pop();
+        }
+        return largest_area;
     }
 };
 
 int main() {
     Solution s;
-    int carfleet_count = s.carFleet(10,{6,8},{3,2});
-    cout<<"no of car fleet: "<<carfleet_count<<endl;
+    int area = s.largestRectangleArea({2,4});
+    cout<<"largest area is "<< area <<endl;
     return 0;
 }
