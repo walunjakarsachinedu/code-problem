@@ -3,25 +3,28 @@ using namespace std;
 
 class Solution {
 public:
-    vector<int> dailyTemperatures(vector<int> temperatures) {
-        stack<int> st;
-        vector<int> res(temperatures.size());
-        for(int i=0;i<temperatures.size();i++) {
-            while(!st.empty() && temperatures[st.top()]<temperatures[i]) {
-                res[st.top()] = i-st.top();
-                st.pop();
-            }
-            st.push(i);
+    int carFleet(int target, vector<int> position, vector<int> speed) {
+        int size = position.size();
+        vector<pair<int,int>> cars;
+        for(int i=0;i<size;i++) cars.push_back({position[i],speed[i]});
+        sort(cars.begin(),cars.end());
+
+        stack<pair<int,int>> st;
+        st.push(cars[size-1]);
+        for(int i=size-2;i>=0;i--) {
+            pair<int,int> c1 = st.top();
+            pair<int,int> c2 = cars[i];
+            double t1 = double (target - c1.first) / c1.second;
+            double t2 = double (target - c2.first) / c2.second;
+            if(t2 > t1) st.push(cars[i]);
         }
-        return res;
+        return st.size();
     }
 };
 
-
 int main() {
     Solution s;
-    vector<int> v = s.dailyTemperatures({30,60,90});
-    for(int i: v) cout<<i<<" ";
-    cout<<endl;
+    int carfleet_count = s.carFleet(10,{6,8},{3,2});
+    cout<<"no of car fleet: "<<carfleet_count<<endl;
     return 0;
 }
