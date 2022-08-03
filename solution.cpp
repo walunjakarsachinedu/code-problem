@@ -3,46 +3,32 @@ using namespace std;
 
 class Solution {
 public:
-    int search(vector<int> nums, int target) {
-        int l = 0, r = nums.size()-1;
-        while(l <= r) {
-            int mid = (r-l)/2 + l;
-            if(target == nums[mid]) return mid;
-            else if(target < nums[mid]) {
-                r = --mid;
-            } else {
-                l = ++mid;
-            }
-        }
-        return -1;
-    }
-
-    bool searchMatrix(vector<vector<int>> matrix, int target) {
-        int m=matrix.size(), n=matrix[0].size();
-        int l=0, r=m-1;
+    int minEatingSpeed(vector<int> piles, int h) {
+        int maxSpeed = *max_element(piles.begin(), piles.end());
+        //k : 0 - maxSpeed
+        int k=maxSpeed;
+        int l=1, r=maxSpeed-1;
         while(l<=r) {
-            if(l==r) break;
             int mid = (r-l)/2 + l;
-            if(target == matrix[mid][n-1]) return true;
-            else if(target < matrix[mid][n-1]) {
-                r = --mid;
+            int total_hr = 0;
+            for(int pile : piles) {
+                total_hr += ceil(double(pile) / (mid));
+            }
+            if(total_hr <= h) {
+                k = min(k, mid);
+                r = mid - 1;
             } else {
-                l = ++mid;
+                l = mid + 1;
             }
         }
-        if(target > matrix[l][n-1])
-            ++l;
-
-        if(l < m) {
-            return search(matrix[l], target) != -1;
-        }
-        return false;
+        return k;
     }
 };
 
+
 int main() {
     Solution s;
-    bool ispresent = s.searchMatrix({{1,3,5,7},{10,11,16,20},{23,30,34,60}},34);
-    cout<<"isPresent: "<<(ispresent ? "true" : "false")<<endl;
+    int k = s.minEatingSpeed({1,1,1,999999999}, 10);
+    cout<<"k: "<<k<<endl;
     return 0;
 }
