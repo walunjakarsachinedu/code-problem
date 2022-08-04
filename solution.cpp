@@ -3,28 +3,28 @@ using namespace std;
 
 class Solution {
 public:
-    int search(vector<int> nums, int target) {
-        int l=0, r=nums.size()-1;
-        while(l<=r) {
+    /* 
+        eliminate the sorted part 
+        then you get unsorted part
+        return minimum of unsorted part
+    */
+    int findMin(vector<int> nums) {
+        int size = nums.size();
+        int l=0, r=size-1;
+
+        if(nums[l] <= nums[r]) return nums[l];
+
+        while(l<r) {
             int mid = (r-l)/2 + l;
-            if(target == nums[mid]) return mid;
-            //left sorted part
-            else if(nums[l] <= nums[mid]) {
-                //not in range
-                if(target < nums[l] || target > nums[mid]) {
-                    l = mid + 1;
-                } else {
-                    r = mid - 1;
-                }
+            if(nums[l] <= nums[mid]) {
+                l = mid+1;
+                if(l < size && nums[mid] > nums[l])
+                    return nums[l];
             } 
-            //right sorted part
             else {
-                //not in range
-                if(target < nums[mid] || target > nums[r]) {
-                    r = mid - 1;
-                } else {
-                    l = mid + 1;
-                }
+                r = mid-1;
+                if(r >= 0 && nums[r] > nums[mid])
+                    return nums[mid];
             }
         }
         return -1;
@@ -33,6 +33,7 @@ public:
 
 int main() {
     Solution s;
-    cout<<s.search({5,1,3}, 1)<<endl;
+    int min_value = s.findMin({11,13,15,17});
+    cout << "min_value : " << min_value << endl;
     return 0;
 }
