@@ -3,32 +3,36 @@ using namespace std;
 
 class Solution {
 public:
-    int minEatingSpeed(vector<int> piles, int h) {
-        int maxSpeed = *max_element(piles.begin(), piles.end());
-        //k : 0 - maxSpeed
-        int k=maxSpeed;
-        int l=1, r=maxSpeed-1;
+    int search(vector<int> nums, int target) {
+        int l=0, r=nums.size()-1;
         while(l<=r) {
             int mid = (r-l)/2 + l;
-            int total_hr = 0;
-            for(int pile : piles) {
-                total_hr += ceil(double(pile) / (mid));
-            }
-            if(total_hr <= h) {
-                k = min(k, mid);
-                r = mid - 1;
-            } else {
-                l = mid + 1;
+            if(target == nums[mid]) return mid;
+            //left sorted part
+            else if(nums[l] <= nums[mid]) {
+                //not in range
+                if(target < nums[l] || target > nums[mid]) {
+                    l = mid + 1;
+                } else {
+                    r = mid - 1;
+                }
+            } 
+            //right sorted part
+            else {
+                //not in range
+                if(target < nums[mid] || target > nums[r]) {
+                    r = mid - 1;
+                } else {
+                    l = mid + 1;
+                }
             }
         }
-        return k;
+        return -1;
     }
 };
 
-
 int main() {
     Solution s;
-    int k = s.minEatingSpeed({1,1,1,999999999}, 10);
-    cout<<"k: "<<k<<endl;
+    cout<<s.search({5,1,3}, 1)<<endl;
     return 0;
 }
