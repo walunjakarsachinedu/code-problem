@@ -32,40 +32,22 @@ using namespace std;
 
 class Solution {
 public:
-    void reorderList(ListNode* head) {
-        ListNode *sp = head, *fp = head->next; //sp: slow pointer, fp: fast pointer
-        while(fp && fp->next) sp = sp->next, fp= fp->next->next;
+    ListNode* removeNthFromEnd(ListNode* head, int n) {
+        ListNode *p1 = head, *p2 = head;
 
-        ListNode *list = head;
-        ListNode *rlist = reverseList(sp->next);
-        sp->next = nullptr;
+        while (p2 && n) --n, p2 = p2->next;
+        if(p2 == nullptr)  return head = head->next;
+        while (p2->next) p1 = p1->next, p2 = p2->next;
 
-        while(rlist && list) {
-            ListNode *lnext = list->next, *rlnext = rlist->next;
-            list->next = rlist;
-            rlist->next = lnext;
-            list = lnext;
-            rlist = rlnext;
-        }
-    }
+        if(p1->next) p1->next = p1->next->next;
 
-    ListNode* reverseList(ListNode* head) {
-        ListNode *prev = nullptr;
-        while(head) {
-            ListNode* headNext = head->next;
-            head->next = prev;
-            prev = head;
-            if(headNext == nullptr) break;
-            head = headNext;
-        }
         return head;
     }
 };
 
 int main() {
     Solution s;
-    ListNode* list1 = new ListNode({1,2,4,5,7,8});
-    s.reorderList(list1);
+    s.removeNthFromEnd(new ListNode({1,2,5,3}),3)->print();
     return 0;
 }
 
