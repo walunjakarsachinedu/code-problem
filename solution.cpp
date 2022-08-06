@@ -22,58 +22,39 @@ using namespace std;
         cout<<endl;
      }
 
-     void reversePrint() {
-        stack<int> st;
-        ListNode* node = this;
-        while(node) st.push(node->val),node=node->next;
-        while(!st.empty()) cout<<st.top(),st.pop();
-        cout<<endl;
+     ListNode* get(int value) {
+        ListNode *node=this;
+        while (node) {
+            node = node->next;
+            if (node->val == value) return node;
+        }
+        return nullptr;
      }
  };
  
 class Solution {
 public:
-    ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
-        int carry=0;
-        ListNode *res, *prev=nullptr;
-        ListNode *p1=l1, *p2=l2;
-        ListNode *head;
-        while(p1 || p2) {
-            int sum = 0;
-            if(p1) sum+=p1->val;
-            if(p2) sum+=p2->val;
+    bool hasCycle(ListNode *head) {
+        ListNode *slow=head, *fast=head;
 
-            sum += carry;
-            res = new ListNode(sum%10);
-            carry=sum/10;
-            //setting links
-            if(prev) prev->next = res;
-            else head = res;
-            prev = res;
-            //updating pointer
-            if(p1) p1 = p1->next;
-            if(p2) p2 = p2->next;
-            // optimization
-            if(carry == 0 && (p1==nullptr || p2==nullptr)) {
-                if(p1) res->next = p1;
-                if(p2) res->next = p2;
-                break;
-            }
+        while(fast && fast->next) {
+            slow = slow->next;
+            fast = fast->next->next;
+
+            if(slow==fast) return true;
         }
-        if(carry) {
-            res = new ListNode(carry);
-            prev->next = res;
-        }
-        return head;
+        return false;
     }
 };
 
 int main() {
     Solution s;
-    ListNode* head = new ListNode({2,4,6,1,2,3});
-    ListNode* head1 = new ListNode({2,4,6});
-    s.addTwoNumbers(head,head1)->reversePrint();
-    cout<<321642+642<<endl;
+    ListNode *head = new ListNode({1,2,3,4,5});
+    head->get(5)->next = head->get(3);
+
+    bool containsCycle = s.hasCycle(head);
+    if(containsCycle) cout<<"linked-list has cycle"<<endl;
+    else cout<<"linked-list has not cycle"<<endl;
     return 0;
 }
 
