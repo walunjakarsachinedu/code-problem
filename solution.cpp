@@ -34,27 +34,43 @@ using namespace std;
  
 class Solution {
 public:
-    bool hasCycle(ListNode *head) {
-        ListNode *slow=head, *fast=head;
-
-        while(fast && fast->next) {
-            slow = slow->next;
-            fast = fast->next->next;
-
-            if(slow==fast) return true;
+    // place all number to position equal to its value
+    int findDuplicate(vector<int> nums) {
+        for(int i=0;i<nums.size();i++) {
+            int p = i;
+            while(p != nums[p]) {
+                if(nums[p] == nums[nums[p]]) return nums[p];
+                swap(nums[p],nums[nums[p]]);
+            }
         }
-        return false;
+        return -1;
     }
+    // distance from (start to start of loop) & (meeting of point of fast, slow pointer to start of loop)
+    // is equal
+    int findDuplicateFloydAlgorithm(vector<int> nums) {
+        int slow=0, fast=0;
+        while(true){
+            slow = nums[slow];
+            fast = nums[nums[fast]];
+            if(slow==fast) break;
+        }
+
+        int slow2=0;
+        while(true) {
+            slow = nums[slow];
+            slow2 = nums[slow2];
+            if(slow==slow2) return slow;
+        }
+        return -1;
+    }
+
 };
 
 int main() {
     Solution s;
-    ListNode *head = new ListNode({1,2,3,4,5});
-    head->get(5)->next = head->get(3);
-
-    bool containsCycle = s.hasCycle(head);
-    if(containsCycle) cout<<"linked-list has cycle"<<endl;
-    else cout<<"linked-list has not cycle"<<endl;
+    // 2 1 2
+    int dublicate_number = s.findDuplicateFloydAlgorithm({3,1,3,4,2});
+    cout<<dublicate_number<<endl;
     return 0;
 }
 
