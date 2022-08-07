@@ -1,76 +1,108 @@
 #include<bits/stdc++.h>
 using namespace std;
 
- struct ListNode {
-     int val;
-     ListNode *next;
-     ListNode() : val(0), next(nullptr) {}
-     ListNode(int x) : val(x), next(nullptr) {}
-     ListNode(int x, ListNode *next) : val(x), next(next) {}
-     ListNode(vector<int> values) {
-        vector<ListNode*> nodes(values.size());
-        for(int i=0;i<values.size();i++) {
-            nodes[i] = new ListNode(values[i]);
-            if(i>0) nodes[i-1]->next = nodes[i];
-        }
-        val = nodes[0]->val;
-        next = nodes[0]->next;
-     }
-     void print() {
-        ListNode *node = this;
-        while(node) cout<<node->val<<" ",node=node->next;
-        cout<<endl;
-     }
 
-     ListNode* get(int value) {
-        ListNode *node=this;
-        while (node) {
-            node = node->next;
-            if (node->val == value) return node;
+struct Node {
+    int val;
+    int key;
+    Node* prev;
+    Node* next;
+    Node() {}
+    Node(int key, int val) : val(val), key(key), prev(nullptr), next(nullptr)  {}
+
+    ///Order of parameter matter most in this function
+    static void addLink(Node* a, Node* b) {
+        if(a) a->next = b;
+        if(b) b->prev = a;
+    }
+};
+
+struct LinkedList {
+    Node* front;
+    Node* back;
+    LinkedList(): front(nullptr), back(nullptr) {}
+
+    void addToBack(Node* node) {
+        Node::addLink(back, node);
+        back = node;
+        node->next = nullptr;
+        if(front == nullptr) front = back;
+    }
+
+    void moveToBack(Node* node) {
+        if (node != back) { // moving node to back
+            if (node == front) front = front->next;
+            else Node::addLink(node->prev, node->next); // removing element
+            addToBack(node);
         }
-        return nullptr;
-     }
- };
- 
-class Solution {
-public:
-    // place all number to position equal to its value
-    int findDuplicate(vector<int> nums) {
-        for(int i=0;i<nums.size();i++) {
-            int p = i;
-            while(p != nums[p]) {
-                if(nums[p] == nums[nums[p]]) return nums[p];
-                swap(nums[p],nums[nums[p]]);
+    }
+
+    void print(bool forward) {
+        if(forward) {
+            Node* node = front;
+            while(node) {
+                cout<<"("<<node->key<<":"<<node->val<<") ";
+                node = node->next;
+            }
+        } else {
+            Node* node = back;
+            while(node) {
+                cout<<node->val<<" ";
+                node = node->prev;
             }
         }
-        return -1;
+        cout<<endl;
     }
-    // distance from (start to start of loop) & (meeting of point of fast, slow pointer to start of loop)
-    // is equal
-    int findDuplicateFloydAlgorithm(vector<int> nums) {
-        int slow=0, fast=0;
-        while(true){
-            slow = nums[slow];
-            fast = nums[nums[fast]];
-            if(slow==fast) break;
+};
+// most recently used node is  most recently add, updated, getted
+class LRUCache {
+public:
+    int capacity;
+    unordered_map<int,Node*> hashMap;
+    LinkedList queue; // most recently used node is at back of queue
+
+    LRUCache(int capacity) : capacity(capacity) {}
+    
+    int get(int key) {
+        if(hashMap.find(key) == hashMap.end()) return -1;
+
+        Node* node = hashMap[key];
+        queue.moveToBack(node);
+        return node->val;
+    }
+    
+    void put(int key, int value) {
+        //updating value
+        if (hashMap.find(key) != hashMap.end()) {
+            Node* node = hashMap[key];
+            node->val = value;
+            queue.moveToBack(node);
+            return ;
         }
 
-        int slow2=0;
-        while(true) {
-            slow = nums[slow];
-            slow2 = nums[slow2];
-            if(slow==slow2) return slow;
+        Node* node = new Node(key, value);
+        //resizing queue for adding new element
+        if(hashMap.size() >= capacity) { //capacity > 0
+            hashMap.erase(queue.front->key); //remove from hashmap
+            queue.front = queue.front->next; //remove from queue
         }
-        return -1;
-    }
+        queue.addToBack(node);
 
+        if(queue.back == nullptr) queue.back = queue.front;
+        hashMap[key] = node;
+    }
 };
 
 int main() {
-    Solution s;
-    // 2 1 2
-    int dublicate_number = s.findDuplicateFloydAlgorithm({3,1,3,4,2});
-    cout<<dublicate_number<<endl;
+    LRUCache lRUCache = LRUCache(2);
+    //[2],[2,1],[1,1],[2,3],[4,1],[1],[2]
+    lRUCache.put(2,1);
+    lRUCache.put(1,1);
+    lRUCache.put(2,3);
+    lRUCache.put(4,1);
+    //lRUCache.queue.print(true);
+    lRUCache.get(1);
+    cout<<lRUCache.get(2);
     return 0;
 }
 
