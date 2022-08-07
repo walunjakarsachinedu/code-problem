@@ -23,46 +23,56 @@ using namespace std;
             cout<<node->val<<" ";
             node = node->next;
         }
+        cout<<endl;
      }
  };
 
 class Solution {
 public:
-    ListNode* mergeKLists(vector<ListNode*> lists) {
-        int l = 0, r = lists.size()-1;
-        while(r>0) {
-            while(l<r) {
-                lists[l] = mergeTwoList(lists[l], lists[r]);
-                l++, r--;
+    ListNode* reverseKGroup(ListNode* head, int k) {
+        ListNode* start = head;
+        ListNode* end = head;
+        ListNode* prev_end = nullptr;
+        ListNode* res = nullptr;
+        while(end) {
+            for(int i=1;i<k;i++) {
+                if(end) end = end->next;
+                else break;
             }
-            l=0;
+            if(res==nullptr) res = end;
+            if(end) {
+                reverse(start,end); 
+                swap(start, end); // swap for avoiding confusion
+                if(prev_end) prev_end->next = start;
+                prev_end = end; 
+                start = end = end->next;
+            }
         }
-        return lists[0];
+        if(res) return res;
+        else return head;
     }
 
-    ListNode* mergeTwoList(ListNode* list1, ListNode* list2) {
-        ListNode* mergeList = new ListNode();
-        ListNode* tail = mergeList;
-        while(list1!= nullptr && list2 != nullptr) {
-            if(list1->val < list2->val) {
-                tail->next = list1;
-                list1 = list1->next;
-            }
-            else {
-                tail->next = list2;
-                list2 = list2->next;
-            }
-            tail = tail->next;
+    ListNode* reverse(ListNode* start, ListNode* end) {
+        ListNode* prev = end->next;//end->next;
+        ListNode* next = nullptr;
+        ListNode* head = end;
+        ListNode* end_next = end->next;
+        while(start != end_next) {
+            next = start->next;
+            start->next = prev;
+            prev = start;
+            start = next;
         }
-        tail->next = (list1) ? list1 : list2;
-
-        return mergeList->next;
+        return head;
     }
 };
 
 
 int main() {
     Solution s;
-    s.mergeKLists({new ListNode({1,5,10}),new ListNode({1,2,3}), new ListNode({0,2,3,4})})->print();
+    ListNode* node = new ListNode({1,2,3,4});
+    s.reverseKGroup(new ListNode({1,2,3,4}),5)->print();
+    //s.reverse(node,node->next->next->next)->print();
+    
     return 0;
 }
