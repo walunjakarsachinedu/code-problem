@@ -25,6 +25,13 @@ private:
 
 class Solution {
 public:
+    bool isSubtree(TreeNode *root, TreeNode *subRoot) {
+        if(root==nullptr) return false;
+        return isSameTree(root, subRoot) 
+        || isSubtree(root->left, subRoot) 
+        || isSubtree(root->right, subRoot);
+    }
+
     bool isSameTree(TreeNode* p, TreeNode* q) {
         if(p==nullptr && q==nullptr) return true;
         return (p && q) 
@@ -39,6 +46,6 @@ int main() {
     Solution s;
     TreeNode* root1 = new TreeNode(1,new TreeNode(2), new TreeNode(1));
     TreeNode* root2 = new TreeNode(1,new TreeNode(1), new TreeNode(2));
-    cout<<(s.isSameTree(root1,root2) ? "tree are equal" : "tree are unequal")<<endl;
+    cout<<(s.isSubtree(root1,root2) ? "tree contains subtree" : "tree doesn't contains subtree")<<endl;
     return 0;
 }
