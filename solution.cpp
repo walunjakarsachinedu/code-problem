@@ -24,20 +24,20 @@ private:
 };
 
 class Solution {
+    bool isTreeBalanced = true;
 public:
-    int maxDiameter = 0;
 
-    int diameterOfBinaryTree(TreeNode* root) {
-        maxDepth(root);
-        return maxDiameter;
+    bool isBalanced(TreeNode* root) {
+        depth(root);
+        return isTreeBalanced;
     }
 
-    int maxDepth(TreeNode* root) {
-        if(root == nullptr) return -1;
-        int left = maxDepth(root->left);
-        int right = maxDepth(root->right);
-        maxDiameter = max(maxDiameter, 2 + left + right);
-        return 1 + max(left,right);
+    int depth(TreeNode* root) {
+        if(root==nullptr)return -1;
+        int left = depth(root->left);
+        int right = depth(root->right);
+        isTreeBalanced &= abs(left-right) <= 1;
+        return 1 + max(left, right);
     }
 };
 
@@ -45,6 +45,6 @@ public:
 int main() {
     Solution s;
     TreeNode* root = new TreeNode(1,new TreeNode(20, new TreeNode(5), new TreeNode(6)), new TreeNode(10));
-    cout<<s.diameterOfBinaryTree(root)<<endl;
+    cout<<(s.isBalanced(root) ? "tree is balanced" : "tree is unbalanced")<<endl;
     return 0;
 }
