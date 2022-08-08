@@ -25,11 +25,19 @@ private:
 
 class Solution {
 public:
+    int maxDiameter = 0;
+
+    int diameterOfBinaryTree(TreeNode* root) {
+        maxDepth(root);
+        return maxDiameter;
+    }
+
     int maxDepth(TreeNode* root) {
-        if(root==nullptr) return 0;
-        bool isRootElement = root->left==nullptr && root->right==nullptr;
-        if(isRootElement) return 1;
-        return 1 + max(maxDepth(root->left),maxDepth(root->right));
+        if(root == nullptr) return -1;
+        int left = maxDepth(root->left);
+        int right = maxDepth(root->right);
+        maxDiameter = max(maxDiameter, 2 + left + right);
+        return 1 + max(left,right);
     }
 };
 
@@ -37,6 +45,6 @@ public:
 int main() {
     Solution s;
     TreeNode* root = new TreeNode(1,new TreeNode(20, new TreeNode(5), new TreeNode(6)), new TreeNode(10));
-    cout<<s.maxDepth(root)<<endl;
+    cout<<s.diameterOfBinaryTree(root)<<endl;
     return 0;
 }
