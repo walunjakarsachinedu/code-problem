@@ -1,78 +1,66 @@
 #include<bits/stdc++.h>
 using namespace std;
 
- struct ListNode {
-     int val;
-     ListNode *next;
-     ListNode() : val(0), next(nullptr) {}
-     ListNode(int x) : val(x), next(nullptr) {}
-     ListNode(int x, ListNode *next) : val(x), next(next) {}
-     ListNode(vector<int> values) {
-        vector<ListNode*> nodes;
-        for(int i=0;i<values.size();i++) {
-            nodes.push_back(new ListNode(values[i]));
-            if(i>0) nodes[i-1]->next = nodes[i];
-        }
-        val = nodes[0]->val;
-        next = nodes[0]->next;
-     }
 
-     void print() {
-        ListNode* node = this;
-        while(node) {
-            cout<<node->val<<" ";
-            node = node->next;
-        }
+struct TreeNode {
+    int val;
+    TreeNode *left;
+    TreeNode *right;
+    TreeNode() : val(0), left(nullptr), right(nullptr) {}
+    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+    TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+
+    void print() {
+        postOrderTraversal(this);
         cout<<endl;
-     }
- };
+    }
+
+private:  
+    void postOrderTraversal(TreeNode* node) {
+        cout<<node->val<<" ";
+        if(node->left) postOrderTraversal(node->left);
+        if(node->right) postOrderTraversal(node->right);
+    }
+};
 
 class Solution {
 public:
-    ListNode* reverseKGroup(ListNode* head, int k) {
-        ListNode* start = head;
-        ListNode* end = head;
-        ListNode* prev_end = nullptr;
-        ListNode* res = nullptr;
-        while(end) {
-            for(int i=1;i<k;i++) {
-                if(end) end = end->next;
-                else break;
-            }
-            if(res==nullptr) res = end;
-            if(end) {
-                reverse(start,end); 
-                swap(start, end); // swap for avoiding confusion
-                if(prev_end) prev_end->next = start;
-                prev_end = end; 
-                start = end = end->next;
-            }
+    TreeNode* invertTreeIterative(TreeNode* root) {
+        stack<TreeNode*> st;
+        if(root) st.push(root);
+        while(!st.empty()) {
+            TreeNode* node = st.top();
+
+            st.pop();
+
+            swapTreeNode(node->left, node->right);
+
+            if(node->left) st.push(node->left);
+            if(node->right) st.push(node->right);
         }
-        if(res) return res;
-        else return head;
+        return root;
     }
 
-    ListNode* reverse(ListNode* start, ListNode* end) {
-        ListNode* prev = end->next;//end->next;
-        ListNode* next = nullptr;
-        ListNode* head = end;
-        ListNode* end_next = end->next;
-        while(start != end_next) {
-            next = start->next;
-            start->next = prev;
-            prev = start;
-            start = next;
-        }
-        return head;
+    TreeNode* invertTree(TreeNode* root) {
+        if(root == nullptr) return nullptr;
+        swapTreeNode(root->left, root->right);
+        invertTree(root->left);
+        invertTree(root->right);
+        return root;
     }
+
+    void swapTreeNode(TreeNode *&node1, TreeNode *&node2) {
+        TreeNode* temp = node1;
+        node1 = node2;
+        node2 = temp;
+    }
+    
 };
 
 
 int main() {
     Solution s;
-    ListNode* node = new ListNode({1,2,3,4});
-    s.reverseKGroup(new ListNode({1,2,3,4}),5)->print();
-    //s.reverse(node,node->next->next->next)->print();
-    
+    TreeNode* root = new TreeNode(1,new TreeNode(20, new TreeNode(5), new TreeNode(6)), new TreeNode(10));
+    s.invertTree(root)->print();
     return 0;
 }
