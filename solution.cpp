@@ -24,27 +24,21 @@ private:
 };
 
 class Solution {
-    bool isTreeBalanced = true;
 public:
-
-    bool isBalanced(TreeNode* root) {
-        depth(root);
-        return isTreeBalanced;
-    }
-
-    int depth(TreeNode* root) {
-        if(root==nullptr)return -1;
-        int left = depth(root->left);
-        int right = depth(root->right);
-        isTreeBalanced &= abs(left-right) <= 1;
-        return 1 + max(left, right);
+    bool isSameTree(TreeNode* p, TreeNode* q) {
+        if(p==nullptr && q==nullptr) return true;
+        return (p && q) 
+        && (p->val == q->val) 
+        && isSameTree(p->left, q->left) 
+        && isSameTree(p->right, q->right);
     }
 };
 
 
 int main() {
     Solution s;
-    TreeNode* root = new TreeNode(1,new TreeNode(20, new TreeNode(5), new TreeNode(6)), new TreeNode(10));
-    cout<<(s.isBalanced(root) ? "tree is balanced" : "tree is unbalanced")<<endl;
+    TreeNode* root1 = new TreeNode(1,new TreeNode(2), new TreeNode(1));
+    TreeNode* root2 = new TreeNode(1,new TreeNode(1), new TreeNode(2));
+    cout<<(s.isSameTree(root1,root2) ? "tree are equal" : "tree are unequal")<<endl;
     return 0;
 }
