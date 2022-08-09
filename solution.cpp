@@ -25,26 +25,22 @@ private:
 
 class Solution {
 public:
-    vector<vector<int>> levelOrder(TreeNode* root) {
-        queue<TreeNode*> que;
-        vector<vector<int>> res;
-        if(root) que.push(root);
-        while(!que.empty()) {
-            vector<int> level;
-            int size = que.size();
-            for(int i=0;i<size;i++) {
-                TreeNode* node = que.front();
-                level.push_back(node->val);
-                if(node->left) que.push(node->left);
-                if(node->right) que.push(node->right);
-                que.pop();
-            }
-            res.push_back(level);
+    int goodNodes(TreeNode* root) {
+        int count = 0;
+        goodNodes(root, root->val, count);
+        return count;
+    }
+
+private:
+    void goodNodes(TreeNode *root, int maxValue, int &count) {
+        if (root->val >= maxValue) {
+            ++count;
+            maxValue = root->val;
         }
-        return res;
+        if(root->left) goodNodes(root->left, maxValue, count); 
+        if(root->right) goodNodes(root->right, maxValue, count); 
     }
 };
-
 
 int main() {
     Solution s;
@@ -52,12 +48,7 @@ int main() {
     TreeNode zero = TreeNode(0), four = TreeNode(4, &three, &five), seven = TreeNode(7), nine = TreeNode(9);
     TreeNode two = TreeNode(2, &zero, &four), eight = TreeNode(8, &seven, &nine);
     TreeNode *root = new TreeNode(6, &two, &eight);
-    auto result = s.levelOrder(nullptr);
-    for(auto level : result) {
-        for(auto node : level) {
-            cout<<node<<" ";
-        }
-        cout<<endl;
-    }
+    auto count = s.goodNodes(root);
+    cout<<"number of good nodes are: "<<count<<endl;
     return 0;
 }
