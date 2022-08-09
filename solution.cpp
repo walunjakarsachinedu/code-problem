@@ -10,6 +10,10 @@ struct TreeNode {
     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
 
+    void link(TreeNode* left, TreeNode* right) {
+        this->left = left;
+        this->right = right;
+    }
     void print() {
         postOrderTraversal(this);
         cout<<endl;
@@ -25,30 +29,27 @@ private:
 
 class Solution {
 public:
-    int goodNodes(TreeNode* root) {
-        int count = 0;
-        goodNodes(root, root->val, count);
-        return count;
+    bool isValidBST(TreeNode *root) {
+        bool isTreeValid = true;
+        return _isValidBST(root, LONG_MAX, LONG_MIN);
     }
-
 private:
-    void goodNodes(TreeNode *root, int maxValue, int &count) {
-        if (root->val >= maxValue) {
-            ++count;
-            maxValue = root->val;
-        }
-        if(root->left) goodNodes(root->left, maxValue, count); 
-        if(root->right) goodNodes(root->right, maxValue, count); 
+    bool _isValidBST(TreeNode *root, long int minRange, long int maxRange) {
+        if (root == nullptr) return true;
+        if (root->val <= minRange || root->val >= maxRange) return false;
+        if (_isValidBST(root->left, minRange, root->val) 
+        && _isValidBST(root->right, root->val, maxRange)) return true;
+        return false;
     }
 };
 
 int main() {
     Solution s;
-    TreeNode three = TreeNode(3), five = TreeNode(5);
-    TreeNode zero = TreeNode(0), four = TreeNode(4, &three, &five), seven = TreeNode(7), nine = TreeNode(9);
-    TreeNode two = TreeNode(2, &zero, &four), eight = TreeNode(8, &seven, &nine);
-    TreeNode *root = new TreeNode(6, &two, &eight);
-    auto count = s.goodNodes(root);
-    cout<<"number of good nodes are: "<<count<<endl;
+    TreeNode zero(0), one(1), two(2),three(3), four(4), five(5), six(6), seven(7), eight(8), nine(9);
+    six.link(&two,&eight);
+    two.link(&zero, &four); eight.link(&seven, &nine);
+    four.link(&three, &five);
+    if(s.isValidBST(&five)) cout<<"binary tree is valid"<<endl;
+    else cout<<"binary tree is in-valid"<<endl;
     return 0;
 }
