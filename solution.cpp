@@ -70,29 +70,59 @@ private:
     }
 };
 
-class Solution {
+class Codec {
 public:
-    int res = INT_MIN;
-    int maxPathSum(TreeNode* root) {
-        _maxPathSum(root);
+
+    // Encodes a tree to a single string.
+    string serialize(TreeNode* root) {
+        string res = "";
+        _serialize(root, res);
         return res;
     }
-    int _maxPathSum(TreeNode* root) {
-        if(root==nullptr) return 0; 
 
-        auto rootVal = root->val;
-        auto left = max(_maxPathSum(root->left),0);
-        auto right = max(_maxPathSum(root->right),0);
-        
-        res = max(res, rootVal + left + right);
-        return rootVal + max(left, right);
+
+    // Decodes your encoded data to tree.
+    TreeNode* deserialize(string data) {
+        vector<string> arr = split(data, ',');
+        if(arr[0] == "n") return nullptr;
+        int i=0;
+        return _deserialize(arr, i);
     }
+
+private:
+    void _serialize(TreeNode* root, string& res) {
+        if (root == nullptr) {
+            res.append("n,");
+        }
+        else {
+            res.append(to_string(root->val) + ",");
+            _serialize(root->left, res);
+            _serialize(root->right, res);
+        }
+    }
+
+    TreeNode*  _deserialize(vector<string>& data, int& i) {
+        TreeNode *root = new TreeNode(stoi(data[i]));
+        ++i;
+        if(data[i]!="n") root->left = _deserialize(data, i);
+        ++i;
+        if(data[i]!="n") root->right = _deserialize(data, i);
+        return root;
+    }
+
+    vector<string> split(string text, char delim) {
+        string line;
+        vector<string> vec;
+        stringstream ss(text);
+        while (getline(ss, line, delim)) {
+            vec.push_back(line);
+        }
+        return vec;
+    };
 };
 
 int main() {
-    Solution s;
+    Codec s;
     TreeNode* root = new TreeNode({6, 2, 0, 4, 3, 5, 8, 7, 9}, {0, 2, 3, 4, 5, 6, 7, 8, 9});
-    TreeNode* n = new TreeNode({-3}, {-3});
-    cout<<"max path sum : "<<s.maxPathSum(n)<<endl;
     return 0;
 }
