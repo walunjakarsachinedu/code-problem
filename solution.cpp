@@ -29,43 +29,36 @@ private:
 
 class Solution {
 public:
-    // iterative
-    int kthSmallestIterative(TreeNode* root, int k) {
-        stack<TreeNode*> st;
-        TreeNode* node = root;
-        while(node != nullptr) {
-            st.push(node);
-            node = node->left;
-        }
-        while(k!=0 && !st.empty()) {
-            node = st.top();
-            st.pop(); --k;
-            if(k == 0) return node->val;
-            node = node->right;
-            while(node != nullptr) {
-                st.push(node);
-                node = node->left;
-            }
-        }
-        return 0;
+    //normal code
+    TreeNode* _buildTree(vector<int>& preorder, vector<int>& inorder) {
+        if(preorder.empty() && inorder.empty()) return nullptr;
+        TreeNode* root = new TreeNode(preorder[0]);
+        int pos = find(inorder.begin(), inorder.end(), preorder[0])-inorder.begin();
+        vector<int> leftTreePreorder(preorder.begin()+1,preorder.begin()+pos+1);
+        vector<int> leftTreeInorder(inorder.begin(),inorder.begin()+pos);
+        vector<int> rightTreePreorder(preorder.begin()+pos+1,preorder.end());
+        vector<int> rightTreeInorder(inorder.begin()+pos+1,inorder.end());
+
+        root->left = _buildTree(leftTreePreorder, leftTreeInorder);
+        root->right = _buildTree(rightTreePreorder, rightTreeInorder);
+        return root;
     }
 
-    // recursive optimize
-    int kthSmallest(TreeNode* root, int k) {
-        int smallestValue = 0;
-        _kthSmallest(root, k, smallestValue);
-        return smallestValue;
+    TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
+        int rootIdx = 0;
+        return _buildTreeOptimize(preorder, inorder, rootIdx, 0,inorder.size()-1);
     }
 
-    int _kthSmallest(TreeNode* root, int &k, int &value) {
-        if(root==nullptr || k<0) return 0;
-        _kthSmallest(root->left,k, value);
-        --k;
-        if(k==0) value = root->val;
-        _kthSmallest(root->right,k, value);
-        return 0;
+    // space and time optimize code
+    TreeNode* _buildTreeOptimize(vector<int>& preorder, vector<int>& inorder, int& rootIdx, int l, int r) {
+        if(l > r) return nullptr;
+        TreeNode* root = new TreeNode(preorder[rootIdx]);
+        int pos = find(inorder.begin()+l, inorder.end(), preorder[rootIdx]) - inorder.begin();
+        ++rootIdx;
+        root->left = _buildTreeOptimize(preorder, inorder, rootIdx, l, pos-1);
+        root->right = _buildTreeOptimize(preorder, inorder, rootIdx, pos+1, r);
+        return root;
     }
-
 };
 
 int main() {
@@ -74,6 +67,9 @@ int main() {
     six.link(&two,&eight);
     two.link(&zero, &four); eight.link(&seven, &ten);
     four.link(&three, &five);
-    cout<<s.kthSmallest(&six,5)<<endl;
+    int rootIdx = 0;
+    vector<int> preorder = {1,2,3};
+    vector<int> inorder = {2,1,3};
+    s.buildTree(preorder, inorder)->print();
     return 0;
 }
