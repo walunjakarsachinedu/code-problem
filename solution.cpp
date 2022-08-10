@@ -1,6 +1,9 @@
 #include<bits/stdc++.h>
 using namespace std;
 
+enum order {
+    preorder,inorder,postorder
+};
 
 struct TreeNode {
     int val;
@@ -9,47 +12,53 @@ struct TreeNode {
     TreeNode() : val(0), left(nullptr), right(nullptr) {}
     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
-
-    void link(TreeNode* left, TreeNode* right) {
-        this->left = left;
-        this->right = right;
+    TreeNode(vector<int> preorder, vector<int> inorder) {
+        buildTree(preorder, inorder);
     }
-    void print() {
-        postOrderTraversal(this);
+
+    void print(order order=order::preorder) {
+        switch(order) {
+            case order::inorder:
+                inOrderTraversal(this);
+                break;
+            case order::preorder:
+                preOrderTraversal(this);
+                break;
+            case order::postorder:
+                postOrderTraversal(this);
+                break;
+        }
         cout<<endl;
+    }
+    
+    void buildTree(vector<int>& preorder, vector<int>& inorder) {
+        int rootIdx = 0;
+        auto root = _buildTreeOptimize(preorder, inorder, rootIdx, 0,inorder.size()-1);
+        this->val = root->val;
+        this->left = root->left;
+        this->right = root->right;
     }
 
 private:  
-    void postOrderTraversal(TreeNode* node) {
+    void preOrderTraversal(TreeNode* node) {
+        if(node==nullptr) return;
         cout<<node->val<<" ";
-        if(node->left) postOrderTraversal(node->left);
-        if(node->right) postOrderTraversal(node->right);
+        postOrderTraversal(node->left);
+        postOrderTraversal(node->right);
     }
-};
-
-class Solution {
-public:
-    //normal code
-    TreeNode* _buildTree(vector<int>& preorder, vector<int>& inorder) {
-        if(preorder.empty() && inorder.empty()) return nullptr;
-        TreeNode* root = new TreeNode(preorder[0]);
-        int pos = find(inorder.begin(), inorder.end(), preorder[0])-inorder.begin();
-        vector<int> leftTreePreorder(preorder.begin()+1,preorder.begin()+pos+1);
-        vector<int> leftTreeInorder(inorder.begin(),inorder.begin()+pos);
-        vector<int> rightTreePreorder(preorder.begin()+pos+1,preorder.end());
-        vector<int> rightTreeInorder(inorder.begin()+pos+1,inorder.end());
-
-        root->left = _buildTree(leftTreePreorder, leftTreeInorder);
-        root->right = _buildTree(rightTreePreorder, rightTreeInorder);
-        return root;
+    void inOrderTraversal(TreeNode* node) {
+        if(node==nullptr) return;
+        inOrderTraversal(node->left);
+        cout<<node->val<<" ";
+        inOrderTraversal(node->right);
+    }
+    void postOrderTraversal(TreeNode* node) {
+        if(node==nullptr) return;
+        postOrderTraversal(node->left);
+        postOrderTraversal(node->right);
+        cout<<node->val<<" ";
     }
 
-    TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
-        int rootIdx = 0;
-        return _buildTreeOptimize(preorder, inorder, rootIdx, 0,inorder.size()-1);
-    }
-
-    // space and time optimize code
     TreeNode* _buildTreeOptimize(vector<int>& preorder, vector<int>& inorder, int& rootIdx, int l, int r) {
         if(l > r) return nullptr;
         TreeNode* root = new TreeNode(preorder[rootIdx]);
@@ -61,15 +70,29 @@ public:
     }
 };
 
+class Solution {
+public:
+    int res = INT_MIN;
+    int maxPathSum(TreeNode* root) {
+        _maxPathSum(root);
+        return res;
+    }
+    int _maxPathSum(TreeNode* root) {
+        if(root==nullptr) return 0; 
+
+        auto rootVal = root->val;
+        auto left = max(_maxPathSum(root->left),0);
+        auto right = max(_maxPathSum(root->right),0);
+        
+        res = max(res, rootVal + left + right);
+        return rootVal + max(left, right);
+    }
+};
+
 int main() {
     Solution s;
-    TreeNode zero(0), one(1), two(2),three(3), four(4), five(5), six(6), seven(7), eight(8), nine(9), ten(10);
-    six.link(&two,&eight);
-    two.link(&zero, &four); eight.link(&seven, &ten);
-    four.link(&three, &five);
-    int rootIdx = 0;
-    vector<int> preorder = {1,2,3};
-    vector<int> inorder = {2,1,3};
-    s.buildTree(preorder, inorder)->print();
+    TreeNode* root = new TreeNode({6, 2, 0, 4, 3, 5, 8, 7, 9}, {0, 2, 3, 4, 5, 6, 7, 8, 9});
+    TreeNode* n = new TreeNode({-3}, {-3});
+    cout<<"max path sum : "<<s.maxPathSum(n)<<endl;
     return 0;
 }
