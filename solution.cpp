@@ -1,57 +1,52 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-class Node {
-public:
-    char val = ' ';
-    vector<Node*> children = vector<Node*>(26, nullptr);
-    bool isEndOfWord = false;
-    Node() {}
-    Node(char ch): val(ch) {};
-    
-    Node*& getNode(char ch) {
-        return children[ch-97];
+struct Node {
+    char ch;
+    Node* children[26];
+    bool isEndOfWord;
+    Node(char val=' '):ch(val),isEndOfWord(false) {
+        for(int i=0;i<26;i++) children[i]=nullptr;
     }
 };
-
-class Trie {
+class WordDictionary {
 public:
     Node* head;
-    Trie():head(new Node()) {}
-
-    void insert(string word) {
-        Node *node = head;
+    WordDictionary():head(new Node()) {}
+    
+    void addWord(string word) {
+        Node* node = head;
         for(int i=0;i<word.size();i++) {
-            if(node->children[word[i]-97]==nullptr) 
-                node->children[word[i]-97] = new Node(word[i]);
-            node = node->getNode(word[i]);
+            if(node->children[word[i]-97]==nullptr) node->children[word[i]-97] = new Node(word[i]);
+            node = node->children[word[i]-97];
         }
         node->isEndOfWord = true;
     }
-
-    bool search(string word) {
-        Node *node = head;
-        for(int i=0;i<word.size();i++) {
-            if(node==nullptr) return false;
-            node = node->getNode(word[i]);
-        }
-        if(node->isEndOfWord) return true;
-        return false;
-    }
     
-    bool startsWith(string prefix) {
-        Node *node = head;
-        for(int i=0;i<prefix.size();i++) {
-            if(node==nullptr) return false;
-            node = node->getNode(prefix[i]);
+    bool search(string word) {
+        return _search(word, head);
+    }
+private:
+    bool _search(string word, Node* headNode) {
+        Node* node = headNode;
+        for(int i=0;i<word.size();i++) {
+            if(word[i] == '.') {
+                for(int j=0;j<26;j++) {
+                    if(node->children[j])
+                        if(_search(word.substr(i+1), node->children[j])) return true;
+                }
+                return false;
+            }
+            else if(node->children[word[i]-97]==nullptr) return false;
+            node = node->children[word[i]-97];
         }
-        return true;
+        return node->isEndOfWord;
     }
 };
 
 int main() {
-    Trie* trie = new Trie();
-    trie->insert("sachin");
-    cout<<trie->startsWith("sachin")<<endl;
+    WordDictionary wordDictionary;
+    wordDictionary.addWord("s");
+    cout<<wordDictionary.search(".")<<endl;
     return 0;
 }
