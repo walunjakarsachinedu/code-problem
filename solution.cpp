@@ -1,27 +1,31 @@
 #include<bits/stdc++.h>
 using namespace std;
 
+struct comparator{
+    bool operator()(const vector<int>& a,const vector<int>& b) const{
+        float distance_a = sqrt(a[0]*a[0] + a[1]*a[1]);
+        float distance_b = sqrt(b[0]*b[0] + b[1]*b[1]);
+        return distance_a < distance_b;
+    }
+};        
 class Solution {
 public:
-    int lastStoneWeight(vector<int>& stones) {
-        make_heap(stones.begin(), stones.end());
-        while(!stones.empty()) {
-            int a = stones.front();
-            pop_heap(stones.begin(), stones.end()); stones.pop_back();
-            if(stones.empty()) return a;
-            int b = stones.front();
-            pop_heap(stones.begin(), stones.end()); stones.pop_back();
-            stones.push_back(abs(a-b));
-            push_heap(stones.begin(), stones.end());
+    vector<vector<int>> kClosest(vector<vector<int>> points, int k) {
+        make_heap(points.begin(),points.end(), comparator());
+        while (points.size() != k) {
+            pop_heap(points.begin(), points.end(), comparator());
+            points.pop_back();
         }
-        return stones.front();
+        return points;
     }
 };
 
 int main() {
     Solution s;
-    vector<int> stones = {2,2};
-    cout<<s.lastStoneWeight(stones);
-    cout<<endl;
+    auto v = s.kClosest({{1,3},{-2,2}},1);
+    for(auto i:v) {
+        for(auto j:i) cout<<j<<" ";
+        cout<<endl;
+    }
     return 0;
 }
