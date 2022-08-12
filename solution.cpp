@@ -1,39 +1,27 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-class KthLargest {
+class Solution {
 public:
-    vector<int> heap;
-    int k;
-    KthLargest(int k, vector<int> nums): k(k) {
-        heap = vector<int>(nums.begin(), nums.end());
-        make_heap(heap.begin(), heap.end(), greater<int>());
-        while(heap.size() > k) {
-            pop_heap(heap.begin(), heap.end(), greater<int>());
-            heap.pop_back();
+    int lastStoneWeight(vector<int>& stones) {
+        make_heap(stones.begin(), stones.end());
+        while(!stones.empty()) {
+            int a = stones.front();
+            pop_heap(stones.begin(), stones.end()); stones.pop_back();
+            if(stones.empty()) return a;
+            int b = stones.front();
+            pop_heap(stones.begin(), stones.end()); stones.pop_back();
+            stones.push_back(abs(a-b));
+            push_heap(stones.begin(), stones.end());
         }
-    }
-    
-    int add(int val) {
-        if(heap.size() >= k) {
-            if(val > heap.front()) {
-                pop_heap(heap.begin(), heap.end(), greater<int>());
-                heap.pop_back();
-            } 
-            else return heap.front();
-        }
-        heap.push_back(val);
-        push_heap(heap.begin(), heap.end(), greater<int>());
-        return heap.front();
+        return stones.front();
     }
 };
 
 int main() {
-    KthLargest kthLargest(2, {0});
-    cout<<kthLargest.add(-1)<<endl;
-    cout<<kthLargest.add(1)<<endl;
-    cout<<kthLargest.add(-2)<<endl;
-    cout<<kthLargest.add(-4)<<endl;
-    cout<<kthLargest.add(3)<<endl;
+    Solution s;
+    vector<int> stones = {2,2};
+    cout<<s.lastStoneWeight(stones);
+    cout<<endl;
     return 0;
 }
