@@ -1,109 +1,76 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-class Twitter { // efficient solution
-public:
-    map<int,set<int>> followee; // userId -> {followees}
-    vector<pair<int,int>> tweets; // <userId, tweetId>
-    Twitter() { }
-    
-    void postTweet(int userId, int tweetId) {
-        tweets.push_back({userId, tweetId});
-    }
-    
-    vector<int> getNewsFeed(int userId) {
-        vector<int> newsFeeds;
-        bool isFollowedNewsFeeds = false;
-        for(int i=tweets.size()-1; i>=0;i--) { // traversing most recent to oldest tweet
-            isFollowedNewsFeeds = userId == tweets[i].first || followee[userId].find(tweets[i].first) != followee[userId].end();
-            if(isFollowedNewsFeeds) newsFeeds.push_back(tweets[i].second);
-            if(newsFeeds.size()==10) break;
-        }
-        return vector<int>(newsFeeds.begin(), newsFeeds.begin() + min(10, (int) newsFeeds.size()));
-    }
-    
-    void follow(int followerId, int followeeId) {
-        followee[followerId].insert(followeeId);
-    }
-    
-    void unfollow(int followerId, int followeeId) {
-        followee[followerId].erase(followeeId);
-    }
+/*
+algorithm: 
+    left part = max_heap
+    right part = min_heap
+    following should be always true:
+        max_heap.values < min_heap.values
+        max_heap.size <= min_heap.size + 1 
+        min_heap.size <= max_heap.size + 1
 
-    void printNewsFeed(int userId) {
-        vector<int> newsFeeds = getNewsFeed(userId);
-        for(int newsFeed : newsFeeds) cout<<newsFeed<<" ";
+array: 1 2 3 4
+max_heap: 2 1 
+min_heap: 3 4
+*/
+
+class MedianFinder {
+    priority_queue<int, vector<int>, greater<int>> min_heap;
+    priority_queue<int,vector<int>, less<int>> max_heap;
+public:
+    MedianFinder() {}
+
+    void addNum(int num) {
+        max_heap.push(num);
+        if((!min_heap.empty() && max_heap.top() > min_heap.top()) || max_heap.size() > min_heap.size() + 1) {
+            min_heap.push(max_heap.top());
+            max_heap.pop();
+        }
+        if(max_heap.size() + 1 < min_heap.size()) {
+            max_heap.push(min_heap.top());
+            min_heap.pop();
+        }
+    }
+    
+    double findMedian() {
+        if(min_heap.size() == max_heap.size()) return ((double) max_heap.top() + min_heap.top()) / 2;
+        return (max_heap.size() > min_heap.size()) ? max_heap.top() : min_heap.top();
+    }
+    
+    void print() {
+        cout<<"max_heap: ";
+        while (!max_heap.empty()) {
+            cout << max_heap.top() << " ";
+            max_heap.pop();
+        }
+        cout<<endl;
+
+        cout<<"min_heap: ";
+        while (!min_heap.empty()) {
+            cout << min_heap.top() << " ";
+            min_heap.pop();
+        }
         cout<<endl;
     }
 };
 
-struct Tweet {
-    int userId;
-    int tweetId;
-    int time;
-    Tweet() {}
-    Tweet(int userId, int tweetId, int time): userId(userId), tweetId(tweetId), time(time) {}
-    
-    bool operator()(Tweet& tweet1, Tweet& tweet2) {
-        return tweet1.time < tweet2.time;
-    }
-};
-
-class TwitterUsingHeap { // using heap (less efficient)
-public:
-    int time = 0;
-    map<int, pair<vector<Tweet>, set<int>>> data; 
-    // userId -> pair<tweets,followee> 
-
-    TwitterUsingHeap() {}
-
-    void postTweet(int userId, int tweetId) {
-        ++time;
-        data[userId].first.push_back({userId, tweetId, time});
-    }
-    
-    vector<int> getNewsFeed(int userId) {
-        vector<Tweet> newsFeeds = data[userId].first;
-        for(auto followee : data[userId].second) {
-            newsFeeds.insert(newsFeeds.end(), data[followee].first.begin(), data[followee].first.end());
-        }
-        make_heap(newsFeeds.begin(), newsFeeds.end(), Tweet()); // max heap for maximizing time
-        
-        vector<int> result;
-        int newsFeedsSize = newsFeeds.size();
-        for(int i=0;i<newsFeedsSize && i<10;i++) {
-            pop_heap(newsFeeds.begin(), newsFeeds.end(), Tweet());
-            result.push_back(newsFeeds.back().tweetId);
-            newsFeeds.erase(newsFeeds.end()-1);
-        }
-        return result;
-    }
-    
-    void follow(int followerId, int followeeId) {
-        data[followerId].second.insert(followeeId);
-    }
-    
-    void unfollow(int followerId, int followeeId) {
-        data[followerId].second.erase(followeeId);
-    }
-
-    void printNewsFeed(int userId) {
-        vector<int> newsFeeds = getNewsFeed(userId);
-        for(int newsFeed : newsFeeds) cout<<newsFeed<<" ";
-        cout<<endl;
-    } 
-};
 
 
 int main() {
-    Twitter twitter;
-    twitter.postTweet(1, 5); // User 1 posts a new tweet (id = 5).
-    twitter.getNewsFeed(1);  // User 1's news feed should return a list with 1 tweet id -> [5]. return [5]
-    twitter.follow(1, 2);    // User 1 follows user 2.
-    twitter.postTweet(2, 6); // User 2 posts a new tweet (id = 6).
-    twitter.postTweet(1,56);
-    twitter.printNewsFeed(1);  // User 1's news feed should return a list with 2 tweet ids -> [6, 5]. Tweet id 6 should precede tweet id 5 because it is posted after tweet id 5.
-    twitter.unfollow(1, 2);  // User 1 unfollows user 2.
-    twitter.getNewsFeed(1);  // User 1's news feed should return a list with 1 tweet id -> [5], since user 1 is no longer following user 2.
+    double median = 0;
+    //[[],[1],[],[2],[],[3],[],[4],[],[5],[],[6],[],[7],[],[8],[],[9],[],[10],[]]
+    MedianFinder medianFinder;
+    medianFinder.addNum(1);    
+    medianFinder.addNum(2); 
+    medianFinder.addNum(3);    
+    medianFinder.addNum(4);    
+    medianFinder.addNum(5);    
+    medianFinder.addNum(6); 
+    medianFinder.addNum(7); 
+    medianFinder.addNum(8); 
+    medianFinder.addNum(9); 
+    medianFinder.addNum(10); 
+    cout<<medianFinder.findMedian()<<endl;
     return 0;
 }
