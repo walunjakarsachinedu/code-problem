@@ -2,75 +2,32 @@
 using namespace std;
 
 /*
-algorithm: 
-    left part = max_heap
-    right part = min_heap
-    following should be always true:
-        max_heap.values < min_heap.values
-        max_heap.size <= min_heap.size + 1 
-        min_heap.size <= max_heap.size + 1
+1,2,3
+        
+    {1}     {}
 
-array: 1 2 3 4
-max_heap: 2 1 
-min_heap: 3 4
 */
-
-class MedianFinder {
-    priority_queue<int, vector<int>, greater<int>> min_heap;
-    priority_queue<int,vector<int>, less<int>> max_heap;
+class Solution {
+    vector<vector<int>> result;
 public:
-    MedianFinder() {}
-
-    void addNum(int num) {
-        max_heap.push(num);
-        if((!min_heap.empty() && max_heap.top() > min_heap.top()) || max_heap.size() > min_heap.size() + 1) {
-            min_heap.push(max_heap.top());
-            max_heap.pop();
-        }
-        if(max_heap.size() + 1 < min_heap.size()) {
-            max_heap.push(min_heap.top());
-            min_heap.pop();
-        }
+    vector<vector<int>> subsets(vector<int>& nums) {
+        _subsets(nums, 0, {});
+        return result;
     }
-    
-    double findMedian() {
-        if(min_heap.size() == max_heap.size()) return ((double) max_heap.top() + min_heap.top()) / 2;
-        return (max_heap.size() > min_heap.size()) ? max_heap.top() : min_heap.top();
-    }
-    
-    void print() {
-        cout<<"max_heap: ";
-        while (!max_heap.empty()) {
-            cout << max_heap.top() << " ";
-            max_heap.pop();
+    void _subsets(vector<int>& nums, int i, vector<int> collection) {
+        result.push_back(collection);
+        for(int j=i;j<nums.size();j++) {
+            vector<int> new_collection(collection);
+            new_collection.push_back(nums[j]);
+            _subsets(nums, j+1, new_collection);
         }
-        cout<<endl;
-
-        cout<<"min_heap: ";
-        while (!min_heap.empty()) {
-            cout << min_heap.top() << " ";
-            min_heap.pop();
-        }
-        cout<<endl;
     }
 };
 
-
-
 int main() {
-    double median = 0;
-    //[[],[1],[],[2],[],[3],[],[4],[],[5],[],[6],[],[7],[],[8],[],[9],[],[10],[]]
-    MedianFinder medianFinder;
-    medianFinder.addNum(1);    
-    medianFinder.addNum(2); 
-    medianFinder.addNum(3);    
-    medianFinder.addNum(4);    
-    medianFinder.addNum(5);    
-    medianFinder.addNum(6); 
-    medianFinder.addNum(7); 
-    medianFinder.addNum(8); 
-    medianFinder.addNum(9); 
-    medianFinder.addNum(10); 
-    cout<<medianFinder.findMedian()<<endl;
+    Solution s;
+    vector<int> nums = {};
+    s.subsets(nums);
+
     return 0;
 }
