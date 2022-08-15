@@ -2,34 +2,35 @@
 using namespace std;
 
 class Solution {
-    vector<vector<int>> result;
 public:
-    vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
-        sort(candidates.begin(), candidates.end());
-        vector<int> combination;
-        _combintationSum2(candidates, 0, target, combination);
-        return result;
+    bool exist(vector<vector<char>>& board, string word) {
+        for(int i=0;i<board.size();i++) 
+            for(int j=0;j<board[0].size();j++) 
+                if(_exist(board, i, j, word, 0)) return true;
+        return false;
     }
 
-    void _combintationSum2(vector<int>& candidates, int i, int target, vector<int>& combination) {
-        if(target == 0) result.push_back(combination);
-        if(target <= 0) return ; // base condition
-        if(i<candidates.size() && candidates[i] > target) return ;
+    bool _exist(vector<vector<char>>& board, int i, int j, string word, int wIdx) {
+        if(i<0 || j<0 || i>=board.size() || j>=board[0].size() || board[i][j] != word[wIdx]) return false;
+        if(wIdx == word.size()-1) return true;
 
-        int prev = -1; 
-        for(int j=i;j<candidates.size();j++) {
-            if(candidates[j] == prev) continue; // eliminate dublicate
-            combination.push_back(candidates[j]);
-            _combintationSum2(candidates, j+1, target-candidates[j], combination);
-            combination.pop_back(); // backtracking
-            prev = candidates[j];
-        }
+        board[i][j] = '*';
+        bool res = _exist(board, i+1, j, word, wIdx + 1)
+                || _exist(board, i-1, j, word, wIdx + 1)
+                || _exist(board, i, j+1, word, wIdx + 1)
+                || _exist(board, i, j-1, word, wIdx + 1);
+        board[i][j] = word[wIdx];
+
+        return res;
     }
 };
 
 int main() {
     Solution s;
-    vector<int> nums = {1,1,1,3,3,5};
-    s.combinationSum2(nums, 8);
+    vector<vector<char>> board = {
+        {'A', 'B', 'C', 'E'}, 
+        {'S', 'F', 'C', 'S'}, 
+        {'A', 'D', 'E', 'E'}};
+    cout<<s.exist(board, "ABC")<<endl;
     return 0;
 }
