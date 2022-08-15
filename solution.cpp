@@ -2,33 +2,30 @@
 using namespace std;
 
 class Solution {
-public:
     vector<vector<int>> result;
-    vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
-        vector<int> combination;
-        _combinationSum(candidates, 0, target, combination);
+public:
+    vector<vector<int>> permute(vector<int>& nums) {
+        vector<int> permutation;
+        _permute(nums, 0, permutation);
         return result;
     }
 
-    void _combinationSum(vector<int>& candidates, int i, int target, vector<int>& combination) {
-        if(target == 0) result.push_back(combination);
-        if(target <= 0) return;
-
-        combination.push_back(candidates[i]); // adding same element (repetition)
-        _combinationSum(candidates, i, target-candidates[i], combination);
-        combination.pop_back();
-
-        for(int j=i+1;j<candidates.size();j++) {
-            combination.push_back(candidates[j]); // adding new element
-            _combinationSum(candidates, j, target-candidates[j], combination);
-            combination.pop_back();
+    void _permute(vector<int>& nums, int i, vector<int>& permutation) {
+        if (permutation.size() == nums.size()) {
+            result.push_back(permutation);
+            return ;
+        }
+        for(int j=i;j<nums.size();j++) {
+            swap(nums[j],nums[i]); permutation.push_back(nums[i]);
+            _permute(nums, i+1, permutation);
+            swap(nums[j],nums[i]);  permutation.pop_back(); // backtracking
         }
     }
 };
 
 int main() {
     Solution s;
-    vector<int> candidates = {2,3,5};
-    s.combinationSum(candidates, 8);
+    vector<int> nums = {1,2,3};
+    s.permute(nums);
     return 0;
 }
