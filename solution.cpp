@@ -2,35 +2,37 @@
 using namespace std;
 
 class Solution {
+    vector<vector<string>> result;
 public:
-    bool exist(vector<vector<char>>& board, string word) {
-        for(int i=0;i<board.size();i++) 
-            for(int j=0;j<board[0].size();j++) 
-                if(_exist(board, i, j, word, 0)) return true;
-        return false;
+    vector<vector<string>> partition(string s) {
+        vector<string> partition;
+        _partition(s, 0, partition);
+        return result;
     }
 
-    bool _exist(vector<vector<char>>& board, int i, int j, string word, int wIdx) {
-        if(i<0 || j<0 || i>=board.size() || j>=board[0].size() || board[i][j] != word[wIdx]) return false;
-        if(wIdx == word.size()-1) return true;
+    void _partition(string& s, int idx, vector<string>& partition) {
+        if(idx == s.size()) {
+            for (string part : partition) { 
+                int l = 0, r = part.size()-1;
+                while (l < r) if(part[l++]!=part[r--]) return;
+            }
+            result.push_back(partition);
+            return;
+        }
+        // adding element
+        partition.push_back(string(1,s[idx]));
+        _partition(s, idx+1, partition);
+        partition.pop_back(); // backtracking
 
-        board[i][j] = '*';
-        bool res = _exist(board, i+1, j, word, wIdx + 1)
-                || _exist(board, i-1, j, word, wIdx + 1)
-                || _exist(board, i, j+1, word, wIdx + 1)
-                || _exist(board, i, j-1, word, wIdx + 1);
-        board[i][j] = word[wIdx];
-
-        return res;
+        // concatenate element
+        if(partition.empty()) return;
+        partition.back() += s[idx];
+        _partition(s, idx+1, partition);
     }
 };
 
 int main() {
     Solution s;
-    vector<vector<char>> board = {
-        {'A', 'B', 'C', 'E'}, 
-        {'S', 'F', 'C', 'S'}, 
-        {'A', 'D', 'E', 'E'}};
-    cout<<s.exist(board, "ABC")<<endl;
+    s.partition("nitin");
     return 0;
 }
