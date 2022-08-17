@@ -2,37 +2,35 @@
 using namespace std;
 
 class Solution {
-    vector<vector<string>> result;
 public:
-    vector<vector<string>> partition(string s) {
-        vector<string> partition;
-        _partition(s, 0, partition);
-        return result;
+    vector<string> numToStr = {
+        "","",  "abc", "def", 
+        "ghi",  "jkl", "mno", 
+        "pqrs", "tuv", "wxyz"
+    };
+
+    vector<string> letterCombinations(string digits) {
+        vector<string> allCombinations = {""};
+        for(auto digit : digits) {
+            string letters = numToStr[stoi(string(1,digit))];
+            allCombinations = combination(allCombinations, letters);
+        }
+        if(digits.empty()) return {};
+        return allCombinations;
     }
 
-    void _partition(string& s, int idx, vector<string>& partition) {
-        if(idx == s.size()) {
-            for (string part : partition) { 
-                int l = 0, r = part.size()-1;
-                while (l < r) if(part[l++]!=part[r--]) return;
-            }
-            result.push_back(partition);
-            return;
+    vector<string> combination(vector<string> s1, string s2) {
+        vector<string> result;
+        for(auto ch1 : s1) {
+            for(auto ch2 : s2) result.push_back(ch1+ch2);
         }
-        // adding element
-        partition.push_back(string(1,s[idx]));
-        _partition(s, idx+1, partition);
-        partition.pop_back(); // backtracking
-
-        // concatenate element
-        if(partition.empty()) return;
-        partition.back() += s[idx];
-        _partition(s, idx+1, partition);
+        return result;
     }
 };
 
 int main() {
     Solution s;
-    s.partition("nitin");
+    auto a = s.letterCombinations("23");
+    for(auto i : a) cout<<i<<" "; cout<<endl;
     return 0;
 }
