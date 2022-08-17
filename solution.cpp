@@ -1,36 +1,57 @@
 #include<bits/stdc++.h>
 using namespace std;
 
+
 class Solution {
+    vector<string> board; 
+    vector<vector<string>> result;
 public:
-    vector<string> numToStr = {
-        "","",  "abc", "def", 
-        "ghi",  "jkl", "mno", 
-        "pqrs", "tuv", "wxyz"
-    };
-
-    vector<string> letterCombinations(string digits) {
-        vector<string> allCombinations = {""};
-        for(auto digit : digits) {
-            string letters = numToStr[stoi(string(1,digit))];
-            allCombinations = combination(allCombinations, letters);
-        }
-        if(digits.empty()) return {};
-        return allCombinations;
-    }
-
-    vector<string> combination(vector<string> s1, string s2) {
-        vector<string> result;
-        for(auto ch1 : s1) {
-            for(auto ch2 : s2) result.push_back(ch1+ch2);
-        }
+    vector<vector<string>> solveNQueens(int n) {
+        for(int i=0;i<n;i++) board.push_back(string(n, '.'));
+        _solveNQueens(0);
         return result;
     }
+
+    void _solveNQueens(int y) {
+        if(y==board.size()) {
+            result.push_back(board);
+            return;
+        }
+        for(int x=0;x<board.size();x++){
+            if(isQueenUnderAttack(x, y)) continue;
+            board[y][x] = 'Q';
+            _solveNQueens(y+1);
+            board[y][x] = '.'; // backtracking
+        }
+    }
+
+    bool isQueenUnderAttack(int x, int y) {
+        int m=x, n=y;
+        while(isPositionValid(x, --y)) if(board[y][x] == 'Q') return true;
+        x=m, y=n;
+        while(isPositionValid(++x, --y)) if(board[y][x] == 'Q') return true;
+        x=m, y=n;
+        while(isPositionValid(--x, --y)) if(board[y][x] == 'Q') return true;
+        return false;
+    }
+
+    bool isPositionValid(int x, int y) {
+        return y >= 0 && x >= 0 && x < board.size();
+    }
+
 };
+
 
 int main() {
     Solution s;
-    auto a = s.letterCombinations("23");
-    for(auto i : a) cout<<i<<" "; cout<<endl;
+    auto a = s.solveNQueens(5);
+    for (auto i : a) {
+        for (auto j : i) {
+            cout << j << " ";
+            cout << endl;
+        }
+        cout<<endl;
+    }
+    cout<<"size of result is "<<a.size()<<endl;
     return 0;
 }
