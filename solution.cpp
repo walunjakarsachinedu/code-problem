@@ -3,55 +3,39 @@ using namespace std;
 
 
 class Solution {
-    vector<string> board; 
-    vector<vector<string>> result;
+    int count = 0;
 public:
-    vector<vector<string>> solveNQueens(int n) {
-        for(int i=0;i<n;i++) board.push_back(string(n, '.'));
-        _solveNQueens(0);
-        return result;
+    int numIslands(vector<vector<char>>& grid) {
+        for(int y=0; y<grid.size(); y++)
+            for(int x=0; x<grid[0].size(); x++)
+                if(grid[y][x] == '1') dfs(grid, x, y), ++count;
+        return count;
     }
-
-    void _solveNQueens(int y) {
-        if(y==board.size()) {
-            result.push_back(board);
-            return;
-        }
-        for(int x=0;x<board.size();x++){
-            if(isQueenUnderAttack(x, y)) continue;
-            board[y][x] = 'Q';
-            _solveNQueens(y+1);
-            board[y][x] = '.'; // backtracking
-        }
+    
+    void dfs(vector<vector<char>>& grid, int x, int y) {
+        if(isLandVisited(grid, x, y)) return;
+        
+        grid[y][x] = '0';
+        dfs(grid, x+1, y);
+        dfs(grid, x-1, y);
+        dfs(grid, x, y+1);
+        dfs(grid, x, y-1);
     }
-
-    bool isQueenUnderAttack(int x, int y) {
-        int m=x, n=y;
-        while(isPositionValid(x, --y)) if(board[y][x] == 'Q') return true;
-        x=m, y=n;
-        while(isPositionValid(++x, --y)) if(board[y][x] == 'Q') return true;
-        x=m, y=n;
-        while(isPositionValid(--x, --y)) if(board[y][x] == 'Q') return true;
-        return false;
+    
+    bool isLandVisited(vector<vector<char>>& grid, int x, int y) {
+        return (x<0 || y<0 || x>=grid[0].size() || y>=grid.size()) ||
+            (grid[y][x] == '0');
     }
-
-    bool isPositionValid(int x, int y) {
-        return y >= 0 && x >= 0 && x < board.size();
-    }
-
 };
 
 
 int main() {
     Solution s;
-    auto a = s.solveNQueens(5);
-    for (auto i : a) {
-        for (auto j : i) {
-            cout << j << " ";
-            cout << endl;
-        }
-        cout<<endl;
-    }
-    cout<<"size of result is "<<a.size()<<endl;
+    vector<vector<char>> grid = {
+        {'1', '1', '1', '1', '0'},
+        {'1', '1', '0', '1', '0'},
+        {'1', '1', '0', '0', '0'},
+        {'0', '0', '0', '0', '0'}};
+    cout<<"number of islands are "<<s.numIslands(grid)<<endl;
     return 0;
 }
