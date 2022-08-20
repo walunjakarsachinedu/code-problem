@@ -1,47 +1,49 @@
 #include<bits/stdc++.h>
 using namespace std;
 
-// Definition for a Node.
-class Node {
-public:
-    int val;
-    vector<Node*> neighbors;
-    Node(): val(0), neighbors(vector<Node*>()) {}
-    Node(int _val): val(_val), neighbors(vector<Node*>()) {}
-    Node(int _val, vector<Node*> _neighbors): val(_val), neighbors(_neighbors) {}
-};
-
-// algorithm : store all node in old graph in list & use that list to create cloned graph
-
 class Solution {
+    int max_area = 0;
+    int m, n; // m -> height, n -> width  (of matrix)
 public:
-    Node* cloneGraph(Node* root) {
-        if(root == nullptr) return nullptr;
-
-        // bfs traversal of graph
-        set<Node*> visited; 
-        queue<Node*> que;
-        que.push(root);
-        while(!que.empty()) {
-            Node* node = que.front(); que.pop();
-            if(visited.find(node) != visited.end()) continue;
-            visited.insert(node);
-            for(auto i : node->neighbors) que.push(i);
-        }
-
-        map<int, Node*> newGraphNodes;
-        for(auto oldNode : visited) newGraphNodes.insert({oldNode->val, new Node(oldNode->val)}); // copying values
-        for(auto oldNode : visited) { // copying links
-            Node* node = newGraphNodes[oldNode->val];
-            for(auto neighbor: oldNode->neighbors) {
-                node->neighbors.push_back(newGraphNodes[neighbor->val]); 
+    int maxAreaOfIsland(vector<vector<int>>& grid) {
+        m = grid.size();
+        n = grid[0].size();
+        for(int y=0; y<m; y++) {
+            for(int x=0; x<n; x++) {
+                int area=0;
+                dfs(grid, x, y, area);
+                max_area = max(area, max_area);
             }
         }
-        return newGraphNodes[root->val];
+        return max_area;
+    }
+    
+    void dfs(vector<vector<int>>& grid, int x, int y, int& area) {
+        if(x<0 || y<0 || x>=n || y>=m || grid[y][x] == 0) return;
+        
+        ++area;
+        grid[y][x] = 0;
+        
+        dfs(grid, x+1, y, area);
+        dfs(grid, x-1, y, area);
+        dfs(grid, x, y+1, area);
+        dfs(grid, x, y-1, area);
     }
 };
 
 int main() {
     Solution s;
+    vector<vector<int>> grid = {
+        {0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0}, 
+        {0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0}, 
+        {0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0}, 
+        {0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0}, 
+        {0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0}, 
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0}, 
+        {0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0}, 
+        {0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0}
+        };
+    int max_area = s.maxAreaOfIsland(grid);
+    cout<<max_area<<endl;
     return 0;
 }
