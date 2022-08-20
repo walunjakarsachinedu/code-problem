@@ -1,41 +1,47 @@
 #include<bits/stdc++.h>
 using namespace std;
 
+// Definition for a Node.
+class Node {
+public:
+    int val;
+    vector<Node*> neighbors;
+    Node(): val(0), neighbors(vector<Node*>()) {}
+    Node(int _val): val(_val), neighbors(vector<Node*>()) {}
+    Node(int _val, vector<Node*> _neighbors): val(_val), neighbors(_neighbors) {}
+};
+
+// algorithm : store all node in old graph in list & use that list to create cloned graph
 
 class Solution {
-    int count = 0;
 public:
-    int numIslands(vector<vector<char>>& grid) {
-        for(int y=0; y<grid.size(); y++)
-            for(int x=0; x<grid[0].size(); x++)
-                if(grid[y][x] == '1') dfs(grid, x, y), ++count;
-        return count;
-    }
-    
-    void dfs(vector<vector<char>>& grid, int x, int y) {
-        if(isLandVisited(grid, x, y)) return;
-        
-        grid[y][x] = '0';
-        dfs(grid, x+1, y);
-        dfs(grid, x-1, y);
-        dfs(grid, x, y+1);
-        dfs(grid, x, y-1);
-    }
-    
-    bool isLandVisited(vector<vector<char>>& grid, int x, int y) {
-        return (x<0 || y<0 || x>=grid[0].size() || y>=grid.size()) ||
-            (grid[y][x] == '0');
+    Node* cloneGraph(Node* root) {
+        if(root == nullptr) return nullptr;
+
+        // bfs traversal of graph
+        set<Node*> visited; 
+        queue<Node*> que;
+        que.push(root);
+        while(!que.empty()) {
+            Node* node = que.front(); que.pop();
+            if(visited.find(node) != visited.end()) continue;
+            visited.insert(node);
+            for(auto i : node->neighbors) que.push(i);
+        }
+
+        map<int, Node*> newGraphNodes;
+        for(auto oldNode : visited) newGraphNodes.insert({oldNode->val, new Node(oldNode->val)}); // copying values
+        for(auto oldNode : visited) { // copying links
+            Node* node = newGraphNodes[oldNode->val];
+            for(auto neighbor: oldNode->neighbors) {
+                node->neighbors.push_back(newGraphNodes[neighbor->val]); 
+            }
+        }
+        return newGraphNodes[root->val];
     }
 };
 
-
 int main() {
     Solution s;
-    vector<vector<char>> grid = {
-        {'1', '1', '1', '1', '0'},
-        {'1', '1', '0', '1', '0'},
-        {'1', '1', '0', '0', '0'},
-        {'0', '0', '0', '0', '0'}};
-    cout<<"number of islands are "<<s.numIslands(grid)<<endl;
     return 0;
 }
