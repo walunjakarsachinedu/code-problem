@@ -1,44 +1,71 @@
 #include<bits/stdc++.h>
 using namespace std;
-/*
-algorithm: each course should form uncycled graph with its prerequisite
-important note: to make this algorithm to work, use backtracking 
-*/
+
 class Solution {
 public:
-    bool canFinish(int numCourses, vector<vector<int>>& prerequisites) {
-        map<int, set<int>> preMap;
-        for(auto pre : prerequisites) preMap[pre[0]].insert(pre[1]);
-        vector<bool> visiting(numCourses, false);
-        for(int course=0; course<numCourses; course++) {
-            if(!dfs(course, preMap, visiting)) return false;
+    vector<int> findOrder(int numCourses, vector<vector<int>>& prerequisites) {
+        vector<int> preMap[numCourses];
+        for (auto pre : prerequisites)
+            preMap[pre[1]].push_back(pre[0]);
+        
+        vector<int> dependency(numCourses, 0);
+        for(auto pre : prerequisites)
+            ++dependency[pre[0]];
+        
+        queue<int> que;
+        for(int i=0;i<numCourses;i++) {
+            if(!dependency[i]) que.push(i);
         }
-        return true;
+
+        vector<int> result;  result.reserve(numCourses);
+        while(!que.empty()) {
+            int course = que.front(); que.pop();
+            for(auto i : preMap[course]) {
+                --dependency[i];
+                if(!dependency[i]) que.push(i);
+            }
+            result.emplace_back(course);
+        }
+
+        if(numCourses != result.size()) return {};
+        return result;
     }
     
-    bool dfs(int course, map<int,set<int>>& preMap, vector<bool>& visiting) {
-        if(visiting[course]) return false;
-        if(preMap[course].empty()) return true;
-        
-        visiting[course] = true;
-        auto prerequisites = preMap[course];
-        for(auto pre : prerequisites)  
-            if(!dfs(pre, preMap, visiting)) return false;
-        visiting[course] = false;
-        
-        preMap[course].clear();
-        
-        return true;
-    }
 };
-
 
 int main() {
     int numCourses = 4;
     vector<vector<int>> prerequisites = {{0,1}, {0,2}, {1,3}, {2,3}};
     Solution s;
-    cout<<s.canFinish(numCourses, prerequisites);
-    cout<<endl;
+    vector<int>  a = s.findOrder(4,prerequisites);
+    for(auto i : a) cout<<i<<" "; cout<<endl;
     return 0;
 }
 
+
+
+/*
+    0   
+  1   2
+    3   4
+    
+    3   4
+  1   2
+    0
+
+order : 3 1 2 0
+
+adj : 0 : 1 2
+1 : 3
+2 : 3
+
+reverse-adj : 3 : 1 2
+1 : 0
+2 : 0
+
+visitedCount : 
+0 : 2
+1 : 1 
+2 : 1
+3 : 0
+*/
