@@ -3,54 +3,53 @@ using namespace std;
 
 class Solution {
 public:
-    /**
-     * @param n: An integer
-     * @param edges: a list of undirected edges
-     * @return: true if it's a valid tree, or false
-     */
-    bool validTree(int n, vector<vector<int>> &edges) {
-        if(n-1 != edges.size()) return false;
-        int rank[n];
-        int parent[n];
-        for(int i=0;i<n;i++) { 
-            parent[i] = i; 
-            rank[i] = 1;
+    int ladderLength(string beginWord, string endWord, vector<string>& wordList) {
+        map<string, vector<string>> adjList;
+        for(auto word : wordList) {
+            string current_word = word;
+            for(int i=0;i<word.size();i++) {
+                word[i] = '*';
+                adjList[word].push_back(current_word);
+                word = current_word;
+            }
         }
-
-        for(auto edge : edges) {
-            if(!unionNode(edge[0], edge[1], parent, rank)) return false;
+        
+        string tmp = endWord;
+        tmp[0] = '*';
+        if(!adjList[tmp].size()) return 0;
+        
+        int pathLen=0;
+        queue<string> que; // stores words
+        
+        que.push(beginWord);
+        while(!que.empty()) {
+            int levels = que.size();
+            ++pathLen;
+            for(int l=0;l<levels;l++) {
+                string word = que.front(); que.pop();
+                if(word == endWord) return pathLen;
+                // visit all pattern
+                tmp = word;
+                for(int i=0;i<word.size();i++) {
+                    word[i] = '*';
+                    if(!adjList[word].empty()) {
+                        for(auto neighbour : adjList[word]) {
+                            que.push(neighbour);
+                        }
+                        adjList[word].clear();
+                    }
+                    word = tmp;
+                }
+            }
         }
-        return true;
-    }
-
-private:
-    int findRoot(int node, int parent[]) {
-        while(node != parent[node]) {
-            parent[node] = parent[parent[node]];
-            node = parent[node];
-        }
-        return node;
-    }
-    // return boolean indicating success of union of node
-    bool unionNode(int node1, int node2, int parent[], int rank[]) {
-        node1 = findRoot(node1, parent);
-        node2 = findRoot(node2, parent);
-        if(node1 == node2) return false;
-        if(rank[node1] >= rank[node2]) {
-            parent[node2] = node1;
-            rank[node1] += rank[node2];
-        } else {
-            parent[node1] = node2;
-            rank[node2] += rank[node1];
-        }
-        return true;
+        return 0;
     }
 };
 
 int main() {
     Solution s;
-    vector<vector<int>> edges = {{0,1}, {1,2}, {3,4}, {2,3}};
-    bool count = s.validTree(5,edges);
-    cout<<count<<endl;
+    vector<string> wordList = {"hot","dot","dog","lot","log","cog"};
+    int ladderLength = s.ladderLength("hit", "cog", wordList);
+    cout<<"length of ladder is "<<ladderLength<<endl;
     return 0;
 }
