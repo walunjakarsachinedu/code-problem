@@ -3,53 +3,39 @@ using namespace std;
 
 class Solution {
 public:
-    int ladderLength(string beginWord, string endWord, vector<string>& wordList) {
-        map<string, vector<string>> adjList;
-        for(auto word : wordList) {
-            string current_word = word;
-            for(int i=0;i<word.size();i++) {
-                word[i] = '*';
-                adjList[word].push_back(current_word);
-                word = current_word;
-            }
+    vector<string> findItinerary(vector<vector<string>>& tickets) {
+        unordered_map<string, set<string>> adjList;
+        for(auto ticket : tickets) adjList[ticket[0]].insert(ticket[1]);
+
+        for(auto p : adjList) {
+            cout<< p.first << ':';
+            for(auto i : p.second) cout<<" " <<i; cout<<endl;
+        } 
+        cout<<endl;
+        vector<string> path;
+        dfs(adjList, "JFK", path);
+        reverse(path.begin(), path.end());
+
+        return path;
+    }
+private:
+    void dfs(unordered_map<string, set<string>>& adjList,
+        string airport, vector<string>& result) {
+        
+        while (!adjList[airport].empty()) {
+            string next = *adjList[airport].begin();
+            adjList[airport].erase(adjList[airport].begin());
+            dfs(adjList, next, result);
         }
         
-        string tmp = endWord;
-        tmp[0] = '*';
-        if(!adjList[tmp].size()) return 0;
-        
-        int pathLen=0;
-        queue<string> que; // stores words
-        
-        que.push(beginWord);
-        while(!que.empty()) {
-            int levels = que.size();
-            ++pathLen;
-            for(int l=0;l<levels;l++) {
-                string word = que.front(); que.pop();
-                if(word == endWord) return pathLen;
-                // visit all pattern
-                tmp = word;
-                for(int i=0;i<word.size();i++) {
-                    word[i] = '*';
-                    if(!adjList[word].empty()) {
-                        for(auto neighbour : adjList[word]) {
-                            que.push(neighbour);
-                        }
-                        adjList[word].clear();
-                    }
-                    word = tmp;
-                }
-            }
-        }
-        return 0;
+        result.push_back(airport);
     }
 };
 
 int main() {
     Solution s;
-    vector<string> wordList = {"hot","dot","dog","lot","log","cog"};
-    int ladderLength = s.ladderLength("hit", "cog", wordList);
-    cout<<"length of ladder is "<<ladderLength<<endl;
+    vector<vector<string>> tickets = {{"JFK", "SFO"}, {"SFO", "JFK"}, {"JFK", "ATL"}};
+    auto path = s.findItinerary(tickets);
+    for(auto p : path) cout<<" "<<p; cout<<endl;
     return 0;
 }
