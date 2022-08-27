@@ -1,41 +1,41 @@
 #include<bits/stdc++.h>
+#include "print.cpp"
 using namespace std;
+
+typedef pair<int,int> Point;
+typedef pair<int, Point> Node;
 
 class Solution {
 public:
-    vector<string> findItinerary(vector<vector<string>>& tickets) {
-        unordered_map<string, set<string>> adjList;
-        for(auto ticket : tickets) adjList[ticket[0]].insert(ticket[1]);
+    int minCostConnectPoints(vector<vector<int>>& pts) { // prim's algorithm for finding minimum spanning tree
+        vector<Point> points;
+        for(auto p : pts) points.push_back({p[0], p[1]});
 
-        for(auto p : adjList) {
-            cout<< p.first << ':';
-            for(auto i : p.second) cout<<" " <<i; cout<<endl;
-        } 
-        cout<<endl;
-        vector<string> path;
-        dfs(adjList, "JFK", path);
-        reverse(path.begin(), path.end());
+        priority_queue<Node, vector<Node>, greater<Node>> frontier; // min heap
+        frontier.push({0, points[0]});
+        set<Point> visited;
+        int cost = 0;
 
-        return path;
-    }
-private:
-    void dfs(unordered_map<string, set<string>>& adjList,
-        string airport, vector<string>& result) {
-        
-        while (!adjList[airport].empty()) {
-            string next = *adjList[airport].begin();
-            adjList[airport].erase(adjList[airport].begin());
-            dfs(adjList, next, result);
+        while(!frontier.empty()) { 
+            Node node = frontier.top(); frontier.pop();
+            if(visited.find(node.second) != visited.end()) continue;
+            visited.insert(node.second);
+            cost += node.first;
+            for(auto point : points) {
+                if(visited.find(point) != visited.end()) continue;
+                int distance = abs(node.second.first - point.first) + abs(node.second.second - point.second);
+                frontier.push({distance, point});
+            }
         }
-        
-        result.push_back(airport);
+
+        return cost;
     }
 };
 
 int main() {
     Solution s;
-    vector<vector<string>> tickets = {{"JFK", "SFO"}, {"SFO", "JFK"}, {"JFK", "ATL"}};
-    auto path = s.findItinerary(tickets);
-    for(auto p : path) cout<<" "<<p; cout<<endl;
+    vector<vector<int>> points = {{0,0},{2,2},{3,10},{5,2},{7,0}};
+    int cost = s.minCostConnectPoints(points);
+    cout<<"cost: "<<cost<<endl;
     return 0;
 }
