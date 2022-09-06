@@ -4,39 +4,44 @@ using namespace std;
 
 class Solution {
 public:
-    struct Edge {
-        int end, cost;
-        Edge(int end, int cost): end(end), cost(cost) {}
-        bool operator<(const Edge &e) const { return cost > e.cost; } // reversing operator for min heap
+    struct Node {
+        int x, y, t;
+        Node(int t, int x, int y): t(t), x(x), y(y) {}
+        bool operator<(const Node& d) const { return t > d.t; } // reversing operator
     };
 
-    int networkDelayTime(vector<vector<int>>& times, int n, int k) {
-        vector<int> dist(n+1, INT_MAX); // shortest distance from node K
-        priority_queue<Edge> que;
-        vector<Edge> adjList[n+1];
-
-        for(auto time : times) adjList[time[0]].push_back({time[1], time[2]});
-
-        que.push({k, 0});
+    int swimInWater(vector<vector<int>>& grid) {
+        int n = grid.size();
+        int result = max(grid[0][0], grid[n-1][n-1]);
+        static int dirs[4][2] = {{1,0}, {-1,0}, {0,1}, {0,-1}};
+        priority_queue<Node> que;
+        que.push({grid[0][0], 0, 0}); // {grid[y][x], x, y} (represents node)
         while(!que.empty()) {
-            Edge e = que.top(); que.pop();
-            if(dist[e.end] <= e.cost) continue;
-            dist[e.end] = e.cost;
-            for(auto neighbour : adjList[e.end]) que.push({neighbour.end, neighbour.cost + e.cost});
+            Node node = que.top(); que.pop();
+            result = max(result, node.t);
+            for(auto &dir : dirs) { // exploration
+                int dx = dir[0] + node.x, dy = dir[1] + node.y;
+                if(dx < 0 || dx >= n || dy < 0 || dy >= n || grid[dy][dx] == -1) continue;
+                if(dx == n-1 && dy == n-1) return result;
+                que.push({grid[dy][dx], dx, dy});
+            }
+            grid[node.y][node.x] = -1;
         }
-
-        int t = 0; // t == INT_MAX  indicate graph is not connected
-        for(int i=1;i<dist.size();i++) if(dist[i] > t) t = dist[i];
-        return t == INT_MAX ? -1 : t;
+        return result;
     }
 };
 
 
 int main() {
     Solution s;
-    //[[2,1,1],[2,3,1],[3,4,1]], n = 4, k = 2
-    vector<vector<int>> times = {{2,1,1},{2,3,1},{3,4,1}};
-    int m = s.networkDelayTime(times, 4, 2);
-    cout<<m<<endl;
+    vector<vector<int>> grid = {
+        {10,12,4,6},
+        {9,11,3,5},
+        {1,7,13,8},
+        {2,0,15,14}
+    };
+    int time = s.swimInWater(grid);
+    cout<<"time: "<<time<<endl;
     return 0;
 }
+
