@@ -4,44 +4,48 @@ using namespace std;
 
 class Solution {
 public:
-    struct Node {
-        int x, y, t;
-        Node(int t, int x, int y): t(t), x(x), y(y) {}
-        bool operator<(const Node& d) const { return t > d.t; } // reversing operator
-    };
+    /**
+     * @param words: a list of words
+     * @return: a string which is correct order
+     */
+    string alienOrder(vector<string> &words) {
+        map<char, vector<char>> graph;
 
-    int swimInWater(vector<vector<int>>& grid) {
-        int n = grid.size();
-        int result = max(grid[0][0], grid[n-1][n-1]);
-        static int dirs[4][2] = {{1,0}, {-1,0}, {0,1}, {0,-1}};
-        priority_queue<Node> que;
-        que.push({grid[0][0], 0, 0}); // {grid[y][x], x, y} (represents node)
-        while(!que.empty()) {
-            Node node = que.top(); que.pop();
-            result = max(result, node.t);
-            for(auto &dir : dirs) { // exploration
-                int dx = dir[0] + node.x, dy = dir[1] + node.y;
-                if(dx < 0 || dx >= n || dy < 0 || dy >= n || grid[dy][dx] == -1) continue;
-                if(dx == n-1 && dy == n-1) return result;
-                que.push({grid[dy][dx], dx, dy});
+        for(auto word : words) for(auto ch : word) graph[ch] = {};
+
+        for(int i=0; i<words.size()-1; i++) {
+            string w1 = words[i], w2 = words[i+1];
+            int len = min(w1.size(), w2.size());
+            if(w1.size() > w2.size() && w1.substr(0, len) == w2) return "";
+            for(int j=0; j<len; j++) {
+                char src = w1[j], dst = w2[j];
+                if(src == dst) continue;
+                graph[src].push_back(dst);
+                break;
             }
-            grid[node.y][node.x] = -1;
         }
-        return result;
+        
+        priority_queue<char, vector<char>, greater<char>> que;
+        map<char, int> indegree;
+        for(auto node : graph) for(auto nei : node.second) ++indegree[nei];
+        for(auto node : graph) if(!indegree[node.first]) que.push(node.first);
+        string order = "";
+        while(!que.empty()) {
+            auto cur = que.top(); que.pop();
+            order += cur;
+            for(auto neighbour : graph[cur]) {
+                --indegree[neighbour];
+                if(!indegree[neighbour]) que.emplace(neighbour);
+            }
+        }
+        return order.size() < graph.size() ? "" : order;
     }
 };
 
-
 int main() {
     Solution s;
-    vector<vector<int>> grid = {
-        {10,12,4,6},
-        {9,11,3,5},
-        {1,7,13,8},
-        {2,0,15,14}
-    };
-    int time = s.swimInWater(grid);
-    cout<<"time: "<<time<<endl;
+    vector<string> words = {"zy", "zx"};
+    string order = s.alienOrder(words);
+    for(auto ch: order) cout<<ch<<" "; cout<<endl;
     return 0;
 }
-
