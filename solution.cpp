@@ -1,24 +1,25 @@
-#include<bits/stdc++.h>
-#include "print.cpp"
+#include<vector>
+#include<iostream>
 using namespace std;
+
 
 class Solution {
 public:
-    int climbStairs(int n) {
-        int one = 1;
-        int two = 1;
-        for(int i=1;i<n;i++) {
-            int tmp = two;
-            two = one + two;
-            one = tmp;
+    int minCostClimbingStairs(vector<int>& cost) {
+        int n= cost.size();
+        int one=0, two=0;
+        for(int i=cost.size()-1;i>-1;i--) {
+            int tmp = one;
+            one = min(one, two) + cost[i];
+            two = tmp;
         }
-        return two;
+        return min(one,two);
     }
 };
 
-
 int main() {
     Solution s;
-    cout<<s.climbStairs(4)<<endl;
+    vector<int> cost = {1,100,1,1,1,100,1,1,100,1};
+    cout<<s.minCostClimbingStairs(cost)<<endl;
     return 0;
 }
