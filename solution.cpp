@@ -4,21 +4,30 @@ using namespace std;
 
 class Solution {
 public:
-    int maxSubArray(vector<int>& nums) {
-        int result = nums[0];
-        int cur_sum = nums[0];
-        for(int i=1; i<nums.size(); i++) {
-          cur_sum = max(cur_sum, 0);
-          cur_sum += nums[i];
-          result = max(result, cur_sum);
-        }
-        return result;
+    int maxSubarraySumCircular(vector<int>& nums) {
+      int maxSum = INT_MIN, cmaxSum = 0;
+      int minSum = INT_MIN, cminSum = 0;
+      int total = 0;
+
+      for(int r=0; r<nums.size(); r++) {
+        cmaxSum = max(cmaxSum, 0);
+        cmaxSum += nums[r];
+        maxSum = max(maxSum, cmaxSum);
+
+        cminSum = max(cminSum, 0);
+        cminSum += -nums[r];
+        minSum = max(minSum, cminSum);
+
+        total += nums[r];
+      }
+      if (total == -minSum) return maxSum;
+      return max(maxSum, total + minSum);
     }
 };
 
 int main() {
-  Solution s;
-  vector<int> nums = {-2,1,-3,4,-1,2,1,-5,4};
-  s.maxSubArray(nums);
+  vector<int> nums = {-2,-3,-2};
+  int result = Solution().maxSubarraySumCircular(nums);
+  cout << result << endl;
   return 0;
 }
