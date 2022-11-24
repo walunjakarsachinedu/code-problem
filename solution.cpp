@@ -1,27 +1,55 @@
-#include <bits/stdc++.h>
+#include<bits/stdc++.h>
 #include "print.cpp"
-using namespace std;
 
-// 279. Perfect Squares
+// 36. Valid Sudoku
 class Solution {
 public:
-  int numSquares(int n) {
-    vector<int> cache(n+1, -1);
-    return helper(n, cache);
-  }
-  int helper(int n, vector<int>& cache) {
-    if(cache[n] != -1) return cache[n];
-    if(n<=3) return n;
-    int minPath = n-1;
-    for(int i=1,j=1; j<=n; ++i, j=i*i) {
-      minPath = min(minPath, helper(n-j, cache));
+    bool isValidSudoku(vector<vector<char>>& board) {
+      set<char> setR, setC;
+      map<int, set<char>> setB; // set for each box-id
+      for(int j=0;j<9;j++) {
+        for(int i=0;i<9;i++) {
+          // check all row
+          if(board[j][i] != '.') {
+            if(setR.find(board[j][i]) != setR.end()) return false;
+            setR.insert(board[j][i]);
+          }
+          // check all column
+          if(board[i][j] != '.') {
+            if(setC.find(board[i][j]) != setC.end()) return false;
+            setC.insert(board[i][j]);
+          }
+          // check all box
+          if(board[i][j] != '.') {
+            int box_id = i/3 * 3 + j/3;
+            if(setB[box_id].find(board[i][j]) != setB[box_id].end()) return false;
+            setB[box_id].insert(board[i][j]);
+          }
+        }
+        setR.clear();
+        setC.clear();
+      }
+
+      return true;
     }
-    minPath += 1;
-    cache[n] = minPath;
-    return minPath;
-  }
 };
 
 int main() {
-  cout << Solution().numSquares(50) << endl;
+  vector<vector<char>> sudoku = {
+    {'5','3','.','.','7','.','.','.','.'},
+    {'6','.','.','1','9','5','.','.','.'},
+    {'.','9','.','.','.','.','.','6','.'},
+    {'8','.','.','.','6','.','.','.','3'},
+    {'4','.','.','8','.','3','.','.','1'},
+    {'7','.','.','.','2','.','.','.','6'},
+    {'.','6','.','.','.','.','2','8','.'},
+    {'.','.','.','4','1','9','.','.','5'},
+    {'.','.','.','.','8','.','.','7','9'}
+  };
+  bool isValid = Solution().isValidSudoku(sudoku);
+
+  if(isValid) cout << "sudoku is valid" << endl;
+  else cout << "sudoku is not valid" << endl;
+
+  return 0;
 }
