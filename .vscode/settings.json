@@ -1,0 +1,7 @@
+{
+  "files.associations": {
+    "*.arb": "json",
+    "iostream": "cpp",
+    "ostream": "cpp"
+  }
+}
