@@ -1,55 +1,46 @@
 #include<bits/stdc++.h>
 #include "print.cpp"
 
-// 36. Valid Sudoku
+// 79. Word Search
 class Solution {
+    vector<pair<int, int>> direction = {{1,0}, {0,1}, {-1,0}, {0,-1}};
 public:
-    bool isValidSudoku(vector<vector<char>>& board) {
-      set<char> setR, setC;
-      map<int, set<char>> setB; // set for each box-id
-      for(int j=0;j<9;j++) {
-        for(int i=0;i<9;i++) {
-          // check all row
-          if(board[j][i] != '.') {
-            if(setR.find(board[j][i]) != setR.end()) return false;
-            setR.insert(board[j][i]);
-          }
-          // check all column
-          if(board[i][j] != '.') {
-            if(setC.find(board[i][j]) != setC.end()) return false;
-            setC.insert(board[i][j]);
-          }
-          // check all box
-          if(board[i][j] != '.') {
-            int box_id = i/3 * 3 + j/3;
-            if(setB[box_id].find(board[i][j]) != setB[box_id].end()) return false;
-            setB[box_id].insert(board[i][j]);
-          }
+    bool exist(vector<vector<char>>& board, string word) {
+      for(int r=0; r<board.size(); r++) {
+        for(int c=0; c<board[0].size(); c++) {
+          if (dfs(board, word, 0, r, c)) return true;
         }
-        setR.clear();
-        setC.clear();
+      }
+      return false;
+    }
+
+    bool dfs(vector<vector<char>>& board, string& word, int i, int r, int c) {
+      if(board[r][c] != word[i]) return false;
+      if(i == word.size()-1) return true;
+
+      int tmp = board[r][c];
+      board[r][c] = '.'; // marking visiting
+
+      for(auto [dr, dc] : direction) {
+        dr += r; dc += c;
+        if(dr < 0 || dc < 0 || dr >= board.size() || dc >= board[0].size()) continue;
+        if(dfs(board, word, i+1, dr, dc))
+          return true;
       }
 
-      return true;
+      board[r][c] = tmp; // marking visited
+      return false;
     }
 };
 
 int main() {
-  vector<vector<char>> sudoku = {
-    {'5','3','.','.','7','.','.','.','.'},
-    {'6','.','.','1','9','5','.','.','.'},
-    {'.','9','.','.','.','.','.','6','.'},
-    {'8','.','.','.','6','.','.','.','3'},
-    {'4','.','.','8','.','3','.','.','1'},
-    {'7','.','.','.','2','.','.','.','6'},
-    {'.','6','.','.','.','.','2','8','.'},
-    {'.','.','.','4','1','9','.','.','5'},
-    {'.','.','.','.','8','.','.','7','9'}
+  vector<vector<char>> board = {
+    {'A','B','C','E'},
+    {'S','F','C','S'},
+    {'A','D','E','E'}
   };
-  bool isValid = Solution().isValidSudoku(sudoku);
-
-  if(isValid) cout << "sudoku is valid" << endl;
-  else cout << "sudoku is not valid" << endl;
-
+  string word = "ABCCED";
+  bool ispresent = Solution().exist(board, word);
+  if(ispresent) cout << "word is present in board" << endl;
   return 0;
 }
