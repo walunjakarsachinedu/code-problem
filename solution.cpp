@@ -3,44 +3,32 @@
 using namespace std;
 
 
-// 219. Contains Duplicate II
+// 1343. Number of Sub-arrays of Size K and Average Greater than or Equal to Threshold
 class Solution {
 public:
-    bool containsNearbyDuplicate(vector<int>& nums, int k) {
-      k = min(k, (int) nums.size() - 1);
-      unordered_set<int> st;
-      for(int i=0; i<=k;i++) {
-        if(st.find(nums[i]) != st.end()) return true;
-        st.insert(nums[i]);
-      }
-      for(int i=++k; i<nums.size(); i++) {
-        st.erase(nums[i-k]);
-        if(st.find(nums[i]) != st.end()) return true;
-        st.insert(nums[i]);
-      }
-      return false;
-    }
-    // slightly optimized
-    bool _containsNearbyDuplicate(vector<int>& nums, int k) {
-      k = min(k, (int) nums.size() - 1);
-      unordered_set<int> st;
-      for(int i=0; i<nums.size(); ++i) {
-        if(st.size() == k) st.erase(nums[i-k]);
-        if(st.find(nums[i]) != st.end()) return true;
-        st.insert(nums[i]);
-      }
-      return false;
+    int numOfSubarrays(vector<int>& arr, int k, int threshold) {
+        int count = 0;
+        float avg = 0;
+        int l = 0;
+        for(int r=0;r<arr.size();r++) {
+          avg += (float) arr[r]/k;
+          if(r-l+1 == k) {
+            if(avg >=threshold) ++count;
+            avg -= (float) arr[l]/k;
+            ++l;
+          }
+        }
+        return count;
     }
 };
 
 
 int main() {
-  vector<int> nums = {1,2,3,1,2,3};
-  int k = 2;
-  bool containDublicate = Solution()._containsNearbyDuplicate(nums, k);
+  vector<int> arr = {2,2,2,2,5,5,5,8};
+  int k = 3;
+  int threshold = 4;
 
-  if(containDublicate) cout << "contains dublicate" << endl;
-  else cout << "not contains dublicate" << endl;
-
+  int count = Solution().numOfSubarrays(arr, k, threshold);
+  cout << count << endl;
   return 0;
 }
