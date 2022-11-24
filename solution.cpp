@@ -2,27 +2,45 @@
 #include "print.cpp"
 using namespace std;
 
-// 978. Longest Turbulent Subarray
+
+// 219. Contains Duplicate II
 class Solution {
 public:
-    int maxTurbulenceSize(vector<int>& arr) {
-      if(arr.size() == 1) return 1;
-      int l=0;
-      bool lt = arr[0] < arr[1];
-      int maxLen = 0;
-      for(int r=1; r<arr.size(); r++) {
-        if(arr[r-1] == arr[r]) l = r; 
-        else if((arr[r-1] < arr[r] == lt) || (arr[r-1] > arr[r] == !lt)) l = r-1;
-        lt = arr[r-1] < arr[r];
-        maxLen = max(maxLen, r-l+1);
+    bool containsNearbyDuplicate(vector<int>& nums, int k) {
+      k = min(k, (int) nums.size() - 1);
+      unordered_set<int> st;
+      for(int i=0; i<=k;i++) {
+        if(st.find(nums[i]) != st.end()) return true;
+        st.insert(nums[i]);
       }
-      return maxLen;
+      for(int i=++k; i<nums.size(); i++) {
+        st.erase(nums[i-k]);
+        if(st.find(nums[i]) != st.end()) return true;
+        st.insert(nums[i]);
+      }
+      return false;
+    }
+    // slightly optimized
+    bool _containsNearbyDuplicate(vector<int>& nums, int k) {
+      k = min(k, (int) nums.size() - 1);
+      unordered_set<int> st;
+      for(int i=0; i<nums.size(); ++i) {
+        if(st.size() == k) st.erase(nums[i-k]);
+        if(st.find(nums[i]) != st.end()) return true;
+        st.insert(nums[i]);
+      }
+      return false;
     }
 };
 
+
 int main() {
-  vector<int> arr = {9,4,2,10,7,8,8,1,9};
-  int size = Solution().maxTurbulenceSize(arr);
-  cout << size << endl;
+  vector<int> nums = {1,2,3,1,2,3};
+  int k = 2;
+  bool containDublicate = Solution()._containsNearbyDuplicate(nums, k);
+
+  if(containDublicate) cout << "contains dublicate" << endl;
+  else cout << "not contains dublicate" << endl;
+
   return 0;
 }
