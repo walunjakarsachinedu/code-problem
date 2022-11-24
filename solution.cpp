@@ -2,32 +2,27 @@
 #include "print.cpp"
 using namespace std;
 
+// 978. Longest Turbulent Subarray
 class Solution {
 public:
-    int maxSubarraySumCircular(vector<int>& nums) {
-      int maxSum = INT_MIN, cmaxSum = 0;
-      int minSum = INT_MIN, cminSum = 0;
-      int total = 0;
-
-      for(int r=0; r<nums.size(); r++) {
-        cmaxSum = max(cmaxSum, 0);
-        cmaxSum += nums[r];
-        maxSum = max(maxSum, cmaxSum);
-
-        cminSum = max(cminSum, 0);
-        cminSum += -nums[r];
-        minSum = max(minSum, cminSum);
-
-        total += nums[r];
+    int maxTurbulenceSize(vector<int>& arr) {
+      if(arr.size() == 1) return 1;
+      int l=0;
+      bool lt = arr[0] < arr[1];
+      int maxLen = 0;
+      for(int r=1; r<arr.size(); r++) {
+        if(arr[r-1] == arr[r]) l = r; 
+        else if((arr[r-1] < arr[r] == lt) || (arr[r-1] > arr[r] == !lt)) l = r-1;
+        lt = arr[r-1] < arr[r];
+        maxLen = max(maxLen, r-l+1);
       }
-      if (total == -minSum) return maxSum;
-      return max(maxSum, total + minSum);
+      return maxLen;
     }
 };
 
 int main() {
-  vector<int> nums = {-2,-3,-2};
-  int result = Solution().maxSubarraySumCircular(nums);
-  cout << result << endl;
+  vector<int> arr = {9,4,2,10,7,8,8,1,9};
+  int size = Solution().maxTurbulenceSize(arr);
+  cout << size << endl;
   return 0;
 }
