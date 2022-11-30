@@ -2,41 +2,26 @@
 #include "print.cpp"
 using namespace std;
 
-// 380. Insert Delete GetRandom O(1)
-class RandomizedSet {
+// 1207. Unique Number of Occurrences
+class Solution {
 public:
-    vector<int> array;
-    unordered_map<int,int> set; // value -> index in array
-
-    bool insert(int val) {
-      if(set.find(val) != set.end()) return false;
-      set[val] = array.size();
-      array.emplace_back(val);
-      return true;
-    }
-    
-    bool remove(int val) {
-        if(set.find(val) == set.end()) return false;
-        array[set[val]] = array.back();
-        set[array.back()] = set[val];
-        set.erase(val);
-        array.pop_back();
+    bool uniqueOccurrences(vector<int>& arr) {
+        map<int,int> freq;
+        for(int i: arr) ++freq[i];
+        set<int> occurCount;
+        for(auto i : freq) {
+            if(occurCount.find(i.second) != occurCount.end())
+                return false;
+            occurCount.insert(i.second);
+        }
         return true;
-    }
-    
-    int getRandom() {
-      return array[rand() % array.size()];
     }
 };
 
 int main() {
-  RandomizedSet s;
-  s.insert(10);
-  if(s.insert(10)) cout << "successfully inserted element" << endl;
-  s.insert(12);
-  s.remove(11);
-
-  cout << s.array << endl;
-  cout << s.getRandom() << endl;
+  vector<int> array = {1,2,2,1,1,3};
+  bool hasUniqueOccurence = Solution().uniqueOccurrences(array);
+  if(hasUniqueOccurence) cout << "unique occurences is present" << endl;
+  else cout << "unique occurences is present" << endl;
   return 0;
 }
