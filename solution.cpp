@@ -2,26 +2,27 @@
 #include "print.cpp"
 using namespace std;
 
-// 1207. Unique Number of Occurrences
+// 1704. Determine if String Halves Are Alike
 class Solution {
 public:
-    bool uniqueOccurrences(vector<int>& arr) {
-        map<int,int> freq;
-        for(int i: arr) ++freq[i];
-        set<int> occurCount;
-        for(auto i : freq) {
-            if(occurCount.find(i.second) != occurCount.end())
-                return false;
-            occurCount.insert(i.second);
-        }
-        return true;
+    bool halvesAreAlike(string s) {
+        string vowels = "aeiouAEIOU";
+
+        int vowel1 = 0;
+        for(int i=0;i<s.size()/2;i++) 
+            if(vowels.find(s[i]) != SIZE_T_MAX) ++vowel1;
+        
+        int vowel2 = 0;
+        for(int i=s.size()/2;i<s.size();i++) 
+            if(vowels.find(s[i]) != SIZE_T_MAX) ++vowel2;
+
+        return vowel1 == vowel2;
     }
 };
 
 int main() {
-  vector<int> array = {1,2,2,1,1,3};
-  bool hasUniqueOccurence = Solution().uniqueOccurrences(array);
-  if(hasUniqueOccurence) cout << "unique occurences is present" << endl;
-  else cout << "unique occurences is present" << endl;
-  return 0;
+    if(Solution().halvesAreAlike("textbook")) cout << "halves are alike\n";
+    else cout << "halves are not alike\n";
+
+    return 0;
 }
