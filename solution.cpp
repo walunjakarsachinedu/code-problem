@@ -2,27 +2,30 @@
 #include "print.cpp"
 using namespace std;
 
-// 1704. Determine if String Halves Are Alike
+// 1657. Determine if Two Strings Are Close
+
 class Solution {
 public:
-    bool halvesAreAlike(string s) {
-        string vowels = "aeiouAEIOU";
+    bool closeStrings(string word1, string word2) {
+        map<char,int> freq1, freq2;
+        for(char ch : word1) ++freq1[ch];
+        for(char ch : word2) ++freq2[ch];
+        multiset<int> s1, s2;
+        for(auto f : freq1) s1.insert(f.second);
+        for(auto f : freq2) s2.insert(f.second);
 
-        int vowel1 = 0;
-        for(int i=0;i<s.size()/2;i++) 
-            if(vowels.find(s[i]) != SIZE_T_MAX) ++vowel1;
-        
-        int vowel2 = 0;
-        for(int i=s.size()/2;i<s.size();i++) 
-            if(vowels.find(s[i]) != SIZE_T_MAX) ++vowel2;
+        for(auto c1=freq1.begin(), c2=freq2.begin(); 
+           c1!=freq1.end() && c2!=freq2.end(); ++c1, ++c2) {
+            if(c1->first != c2->first) return false;
+        }
 
-        return vowel1 == vowel2;
+        if(s1!=s2) return false;
+
+        return true;
     }
 };
 
-int main() {
-    if(Solution().halvesAreAlike("textbook")) cout << "halves are alike\n";
-    else cout << "halves are not alike\n";
 
-    return 0;
+int main() {
+  cout << Solution().closeStrings("abc", "bca") << endl;
 }

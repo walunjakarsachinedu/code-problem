@@ -2,6 +2,11 @@
   "files.associations": {
     "*.arb": "json",
     "iostream": "cpp",
-    "ostream": "cpp"
+    "ostream": "cpp",
+    "iosfwd": "cpp",
+    "array": "cpp",
+    "initializer_list": "cpp",
+    "ratio": "cpp",
+    "cmath": "cpp"
   }
 }

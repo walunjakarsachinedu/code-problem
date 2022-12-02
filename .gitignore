@@ -1,2 +1,4 @@
 *.out
 a.out
+test.cpp
+.vscode/settings.json
