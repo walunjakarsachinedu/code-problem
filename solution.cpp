@@ -2,30 +2,37 @@
 #include "print.cpp"
 using namespace std;
 
-// 1657. Determine if Two Strings Are Close
-
+// 2256. Minimum Average Difference
 class Solution {
 public:
-    bool closeStrings(string word1, string word2) {
-        map<char,int> freq1, freq2;
-        for(char ch : word1) ++freq1[ch];
-        for(char ch : word2) ++freq2[ch];
-        multiset<int> s1, s2;
-        for(auto f : freq1) s1.insert(f.second);
-        for(auto f : freq2) s2.insert(f.second);
+    int minimumAverageDifference(vector<int>& nums) {
+        size_t sum = 0;
+        int N = nums.size();
+        for(int num: nums) sum += num;
 
-        for(auto c1=freq1.begin(), c2=freq2.begin(); 
-           c1!=freq1.end() && c2!=freq2.end(); ++c1, ++c2) {
-            if(c1->first != c2->first) return false;
+        int minIndex = 0;
+        int minDiff = INT_MAX;
+        size_t curSum = 0;
+        for(int i=0; i<N; i++) {
+          curSum += nums[i];
+          int curAvg = curSum/(i+1);
+          int nextAvg = (i==N-1) ? 0 : (sum - curSum) / (N-(i+1));
+          int curDiff = abs(curAvg - nextAvg);
+
+          if(curDiff < minDiff) {
+            minDiff = curDiff;
+            minIndex = i;
+          }
         }
-
-        if(s1!=s2) return false;
-
-        return true;
+        return minIndex;
     }
 };
-
+// 2,5,3,9,5,3
+// sum = 27
 
 int main() {
-  cout << Solution().closeStrings("abc", "bca") << endl;
+  vector<int> nums = {2,5,3,9,5,3}; 
+  int minDiff = Solution().minimumAverageDifference(nums);
+  cout << minDiff << endl;
+  return 0;
 }
