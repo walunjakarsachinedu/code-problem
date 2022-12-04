@@ -2,26 +2,25 @@
 #include "print.cpp"
 using namespace std;
 
-// 167. Two Sum II - Input Array Is Sorted
+// 26. Remove Duplicates from Sorted Array
 class Solution {
 public:
-    vector<int> twoSum(vector<int>& numbers, int target) {
-      size_t N = numbers.size();
-      int l=0, r=N-1;
-      while(l<r) {
-        int sum = numbers[l]+numbers[r];
-        if(sum == target) return {l+1,r+1};
-        else if(sum < target) ++l;
-        else --r;
+    int removeDuplicates(vector<int>& nums) {
+      int count = 1, l=0;
+      for (int r=1; r<nums.size(); ++r) {
+        if (nums[r] > nums[l]) {
+          ++count;
+          nums[++l] = nums[r]; 
+        }
       }
-      return {0,0};
+      cout << "nums: " << nums << endl;
+      return count;
     }
 };
 
 int main() {
-  vector<int> numbers = {2,7,11,15};
-  int target = 9;
-  vector<int> indexes = Solution().twoSum(numbers, target);
-  cout << "indexes: " << indexes << endl;
+  vector<int> nums = {0,0,1,1,1,2,2,3,3,4};
+  int k = Solution().removeDuplicates(nums);
+  cout << "k: " << k << endl;
   return 0;
 }
