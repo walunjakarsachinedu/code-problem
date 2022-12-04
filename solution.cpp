@@ -2,30 +2,26 @@
 #include "print.cpp"
 using namespace std;
 
-// 125. Valid Palindrome
+// 167. Two Sum II - Input Array Is Sorted
 class Solution {
 public:
-    bool isPalindrome(string s) {
-        int l=0, r=s.size()-1;
-        while(l<r) {
-          if(!isAlpha(s[l])) ++l;
-          else if(!isAlpha(s[r])) --r;
-          else if(toSmall(s[l])!=toSmall(s[r])) 
-            return false;
-          else ++l, --r;
-        }
-        return true;
-    }
-
-    bool isAlpha(char c) {
-      return (c>='a' && c <='z') || (c>='A' && c<='Z') || (c>='0' && c<='9');
-    }
-    char toSmall(char c) {
-      return (c>='A' && c<='Z') ? c + 32 : c;
+    vector<int> twoSum(vector<int>& numbers, int target) {
+      size_t N = numbers.size();
+      int l=0, r=N-1;
+      while(l<r) {
+        int sum = numbers[l]+numbers[r];
+        if(sum == target) return {l+1,r+1};
+        else if(sum < target) ++l;
+        else --r;
+      }
+      return {0,0};
     }
 };
 
 int main() {
-  
+  vector<int> numbers = {2,7,11,15};
+  int target = 9;
+  vector<int> indexes = Solution().twoSum(numbers, target);
+  cout << "indexes: " << indexes << endl;
   return 0;
 }
