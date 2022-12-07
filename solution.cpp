@@ -8,24 +8,46 @@ struct ListNode {
     ListNode() : val(0), next(nullptr) {}
     ListNode(int x) : val(x), next(nullptr) {}
     ListNode(int x, ListNode *next) : val(x), next(next) {}
+
+    friend ostream& operator<<(ostream& cout, const ListNode* node) {
+      while(node!=NULL) {
+        cout << node->val << " ";
+        node = node->next;
+      }
+      cout << "\b";
+      return cout;
+    }
 };
 
-// 876. Middle of the Linked List
+// 328. Odd Even Linked List
 class Solution {
 public:
-    ListNode* middleNode(ListNode* head) {
-      ListNode *sp = head, *fp = head;
-      while(fp!=NULL && fp->next!=NULL) {
-        sp = sp->next;
-        fp = fp->next->next;
+    ListNode* oddEvenList(ListNode* head) {
+      ListNode *even, *odd, *iter, *even_head;
+      even = odd = iter = even_head = NULL;
+      iter = head;
+      int i = 1;
+      while(iter!=NULL) {
+        if (i % 2 == 1) {
+          if(odd) odd = odd->next = iter;
+          else odd = iter;
+        }
+        else {
+          if(even) even = even->next = iter;
+          else even = even_head = iter;
+        }
+        iter = iter->next;
+        ++i;
       }
-      return sp;
+      if(even) even->next = NULL;
+      if(odd) odd->next = even_head;
+      return head;
     }
 };
 
 int main() {
-  ListNode* head = new ListNode(1, new ListNode(2, new ListNode(3)));
-  ListNode* middleNode = Solution().middleNode(head);
-  cout << "middle node: " << middleNode->val << endl;
+  ListNode* head = new ListNode(1, new ListNode(2, new ListNode(3, new ListNode(4))));
+  head = Solution().oddEvenList(head);
+  cout << "head: " << head << endl;
   return 0;
 }
