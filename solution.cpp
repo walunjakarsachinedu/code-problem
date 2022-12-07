@@ -2,52 +2,41 @@
 #include "print.cpp"
 using namespace std;
 
-struct ListNode {
-    int val;
-    ListNode *next;
-    ListNode() : val(0), next(nullptr) {}
-    ListNode(int x) : val(x), next(nullptr) {}
-    ListNode(int x, ListNode *next) : val(x), next(next) {}
 
-    friend ostream& operator<<(ostream& cout, const ListNode* node) {
-      while(node!=NULL) {
-        cout << node->val << " ";
-        node = node->next;
-      }
-      cout << "\b";
-      return cout;
-    }
+
+struct TreeNode {
+    int val;
+    TreeNode *left;
+    TreeNode *right;
+    TreeNode() : val(0), left(nullptr), right(nullptr) {}
+    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+    TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
 };
 
-// 328. Odd Even Linked List
+// 938. Range Sum of BST
 class Solution {
+  int sum = 0;
 public:
-    ListNode* oddEvenList(ListNode* head) {
-      ListNode *even, *odd, *iter, *even_head;
-      even = odd = iter = even_head = NULL;
-      iter = head;
-      int i = 1;
-      while(iter!=NULL) {
-        if (i % 2 == 1) {
-          if(odd) odd = odd->next = iter;
-          else odd = iter;
-        }
-        else {
-          if(even) even = even->next = iter;
-          else even = even_head = iter;
-        }
-        iter = iter->next;
-        ++i;
+    int rangeSumBST(TreeNode* root, int low, int high) {
+      helper(root, low, high);
+      return sum;
+    }
+
+    void helper(TreeNode* root, int low, int high) {
+      if(root==NULL) return;
+      if (root->val >= low && root->val <= high) {
+        sum += root->val;
+        helper(root->left, low, high);
+        helper(root->right, low, high);
       }
-      if(even) even->next = NULL;
-      if(odd) odd->next = even_head;
-      return head;
+      else if (root->val < low) helper(root->right, low, high);
+      else if (root->val > high) helper(root->left, low, high);
     }
 };
 
 int main() {
-  ListNode* head = new ListNode(1, new ListNode(2, new ListNode(3, new ListNode(4))));
-  head = Solution().oddEvenList(head);
-  cout << "head: " << head << endl;
+  TreeNode* root = new TreeNode(3, new TreeNode(1, new TreeNode(0), new TreeNode(2)), new TreeNode(5, new TreeNode(4), new TreeNode(6)));
+  int sum = Solution().rangeSumBST(root, 1, 4);
+  cout << "sum: " << sum << endl;
   return 0;
 }
