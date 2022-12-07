@@ -2,32 +2,25 @@
 #include "print.cpp"
 using namespace std;
 
-// 80. Remove Duplicates from Sorted Array II
+// 11. Container With Most Water
 class Solution {
 public:
-    int removeDuplicates(vector<int>& nums) {
-      int l=0, count=1;
-      bool isDublicate = false;
-      for(int r=1; r<nums.size(); ++r) {
-        if (!isDublicate && nums[r]==nums[l]) {
-          isDublicate = true;
-          nums[++l] = nums[r];
-          ++count;
+    int maxArea(vector<int>& height) {
+        int maxArea = 0;
+        int l = 0;
+        int r = height.size()-1;
+        while(l < r) {
+          int area = min(height[l], height[r]) * (r-l);
+          maxArea = max(maxArea, area);
+          (height[l] < height[r]) ?  ++l : --r;
         }
-        else if(nums[r] > nums[l]) {
-          isDublicate = false;
-          nums[++l] = nums[r];
-          ++count;
-        }
-      }
-      cout << "nums: " << nums << endl;
-      return count;
+        return maxArea;
     }
 };
 
 int main() {
-  vector<int> nums = {1,1,1,2,2,3};
-  int k = Solution().removeDuplicates(nums);
-  cout << "k: " << k << endl;
+  vector<int> heights = {1,8,6,2,5,4,8,3,7};
+  int maxWater = Solution().maxArea(heights);
+  cout << "k: " << maxWater << endl;
   return 0;
 }
