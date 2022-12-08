@@ -3,7 +3,6 @@
 using namespace std;
 
 
-
 struct TreeNode {
     int val;
     TreeNode *left;
@@ -13,30 +12,34 @@ struct TreeNode {
     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
 };
 
-// 938. Range Sum of BST
+// 872. Leaf-Similar Trees
 class Solution {
-  int sum = 0;
+  vector<int> leafs;
+  bool isSimilar = true;
 public:
-    int rangeSumBST(TreeNode* root, int low, int high) {
-      helper(root, low, high);
-      return sum;
+    bool leafSimilar(TreeNode* root1, TreeNode* root2) {
+      vector<int> l1, l2;
+      getLeafs(root1, l1);
+      getLeafs(root2, l2);
+      if(l1.size() != l2.size()) return false;
+      for(int i=0; i<l1.size(); i++) {
+        if(l1[i] != l2[i]) return false;
+      }
+      return true;
     }
 
-    void helper(TreeNode* root, int low, int high) {
+    void getLeafs(TreeNode* root, vector<int>& l) {
       if(root==NULL) return;
-      if (root->val >= low && root->val <= high) {
-        sum += root->val;
-        helper(root->left, low, high);
-        helper(root->right, low, high);
-      }
-      else if (root->val < low) helper(root->right, low, high);
-      else if (root->val > high) helper(root->left, low, high);
+      if(root->left==NULL && root->right==NULL) l.push_back(root->val);
+      getLeafs(root->left, l);
+      getLeafs(root->right, l);
     }
 };
 
 int main() {
-  TreeNode* root = new TreeNode(3, new TreeNode(1, new TreeNode(0), new TreeNode(2)), new TreeNode(5, new TreeNode(4), new TreeNode(6)));
-  int sum = Solution().rangeSumBST(root, 1, 4);
-  cout << "sum: " << sum << endl;
+  TreeNode* root = new TreeNode(1, new TreeNode(2), new TreeNode(3));
+  TreeNode* root1 = new TreeNode(1, new TreeNode(2), new TreeNode(2));
+  bool isSimilar = Solution().leafSimilar(root, root1);
+  cout << isSimilar << endl;
   return 0;
 }
