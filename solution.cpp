@@ -2,36 +2,28 @@
 #include "print.cpp"
 using namespace std;
 
-// 931. Minimum Falling Path Sum
+// 198. House Robber
 class Solution {
-  int R, C;
+  int N;
 public:
-  int minFallingPathSum(vector<vector<int>>& matrix) {
-    R = matrix.size(), C = matrix[0].size();
-    int minSum = INT_MAX;
-    vector<vector<int>> cache(R, vector<int>(C, -1));
-    for(int c=0; c<C; c++) {
-      minSum = min(minSum, cost(matrix, 0, c, cache));
-    }
-    return minSum;
+  int rob(vector<int>& nums) {
+    N = nums.size();
+    vector<int> cache(N, -1);
+    return dp(nums, 0, 0, cache);
   }
 
-  int cost(vector<vector<int>>& matrix, int r, int c, vector<vector<int>>& cache) {
-    if(c<0 || c>=C) return INT_MAX;
-    if(cache[r][c] != -1) return cache[r][c];
-    if(r==R-1) return matrix[r][c];
-
-    int minCost = cost(matrix, r+1, c, cache);
-    minCost = min(cost(matrix, r+1, c-1, cache), minCost);
-    minCost = min(cost(matrix, r+1, c+1, cache), minCost);
-    cache[r][c] = matrix[r][c] + minCost;
-    return cache[r][c];
+  int dp(vector<int>& nums, int i, int money, vector<int>& cache) {
+    if(i >= N) return money;
+    if(cache[i] != -1) return cache[i];
+    int maxAmt = dp(nums, i+2, nums[i], cache);
+    if(i+1 < N) maxAmt = max(maxAmt, dp(nums, i+3, nums[i+1], cache));
+    cache[i] = maxAmt + money;
+    return cache[i];
   }
-
 };
 
 int main() {
-  vector<vector<int>> matrix = {{2,1,3},{6,5,4},{7,8,9}};
-  cout << Solution().minFallingPathSum(matrix) << endl;
+  vector<int> nums = {1,2,3,1};
+  cout << Solution().rob(nums) << endl;
   return 0;
 }
