@@ -2,37 +2,38 @@
 #include "print.cpp"
 using namespace std;
 
-// 232. Implement Queue using Stacks
-class MyQueue {
+// 150. Evaluate Reverse Polish Notation
+class Solution {
 public:
-  stack<int> in, out;
+  int evalRPN(vector<string>& tokens) {
+    stack<long> operands;
+    for(int i=0; i<tokens.size(); i++) {
+      if(isOperator(tokens[i])) {
+        long o2 = operands.top(); operands.pop();
+        long o1 = operands.top(); operands.pop();
+        operands.push(evaluate(tokens[i], o1, o2));
+      }
+      else operands.push(stoi(tokens[i]));
+    }
+    return operands.top();
+  }
+  //  
 
-  void push(int x) {
-    in.push(x);
+  bool isOperator(string op) {
+    return op=="-" || op=="+" || op=="*" || op=="/";
   }
-  
-  int pop() {
-    int top = peek(); out.pop();
-    return top;
-  }
-  
-  int peek() {
-    if(out.empty()) while(!in.empty()) out.push(in.top()), in.pop();
-    int top = out.top();
-    return top;
-  }
-  
-  bool empty() {
-    return in.empty() && out.empty();
+
+  long evaluate(string optr, long o1, long o2) {
+    if(optr == "*") return o1 * o2;
+    if(optr == "/") return o1 / o2;
+    if(optr == "+") return o1 + o2;
+    if(optr == "-") return o1 - o2;
+    return 0;
   }
 };
 
 int main() {
-  MyQueue que;
-  que.push(1);
-  que.push(2);
-  cout << "top element in queue: " << que.peek() << endl;
-  cout << "poped element: " << que.pop() << endl;
-  cout << "is queue empty : " << (que.empty() ? "true" : "false") << endl;
+  vector<string> tokens = {"2","1","+","3","*"};
+  cout << Solution().evalRPN(tokens) << endl;
   return 0;
 }
