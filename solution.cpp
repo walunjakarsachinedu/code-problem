@@ -2,38 +2,40 @@
 #include "print.cpp"
 using namespace std;
 
-// 150. Evaluate Reverse Polish Notation
+// 886. Possible Bipartition
 class Solution {
+    unordered_set<int> visited;
+    unordered_map<int, int> visitedCount;
 public:
-  int evalRPN(vector<string>& tokens) {
-    stack<long> operands;
-    for(int i=0; i<tokens.size(); i++) {
-      if(isOperator(tokens[i])) {
-        long o2 = operands.top(); operands.pop();
-        long o1 = operands.top(); operands.pop();
-        operands.push(evaluate(tokens[i], o1, o2));
-      }
-      else operands.push(stoi(tokens[i]));
+  bool possibleBipartition(int n, vector<vector<int>>& dislikes) {
+    vector<int> adj[n+1];
+    for(auto& edge : dislikes) {
+      adj[edge[0]].push_back(edge[1]);
+      adj[edge[1]].push_back(edge[0]);
     }
-    return operands.top();
+    for(int i=1; i<=n; i++) {
+      if(!visited.count(i) && hasOddLengthCycle(adj, i, -1, 1)) return false;
+    }
+    return true;
   }
-  //  
-
-  bool isOperator(string op) {
-    return op=="-" || op=="+" || op=="*" || op=="/";
-  }
-
-  long evaluate(string optr, long o1, long o2) {
-    if(optr == "*") return o1 * o2;
-    if(optr == "/") return o1 / o2;
-    if(optr == "+") return o1 + o2;
-    if(optr == "-") return o1 - o2;
-    return 0;
+  bool hasOddLengthCycle(vector<int> adj[], int node, int parent, int count) {
+    visited.insert(node);
+    visitedCount[node] = count;
+    for(int nei : adj[node]) {
+      if(nei == parent) continue;
+      if(visited.count(nei)) {
+        int cycleLength = visitedCount[nei] - visitedCount[node] + 1;
+        if(cycleLength % 2 != 0) return true;
+      }
+      else if(hasOddLengthCycle(adj, nei, node, count+1)) return true;
+    }
+    return false;
   }
 };
 
 int main() {
-  vector<string> tokens = {"2","1","+","3","*"};
-  cout << Solution().evalRPN(tokens) << endl;
+  int n = 10;
+  vector<vector<int>> tokens = {{1,2},{3,4},{5,6},{6,7},{7,8},{8,9}};
+  cout << Solution().possibleBipartition(n, tokens) << endl;
   return 0;
 }

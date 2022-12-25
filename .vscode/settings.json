@@ -7,6 +7,9 @@
     "array": "cpp",
     "initializer_list": "cpp",
     "ratio": "cpp",
-    "cmath": "cpp"
+    "cmath": "cpp",
+    "barrier": "cpp",
+    "*.tcc": "cpp",
+    "variant": "cpp"
   }
 }
