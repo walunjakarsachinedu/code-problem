@@ -3,32 +3,27 @@
 using namespace std;
 
 
-// 520. Detect Capital
+// 944. Delete Columns to Make Sorted
 class Solution {
 public:
-    bool detectCapitalUse(string word) {
-      if(isSmall(word[0])) {
-        for(int i=1; i<word.size(); i++) {
-          if(!isSmall(word[i])) return false;
+    int minDeletionSize(vector<string>& strs) {
+      int N = strs.size();
+      int M = strs[0].size();
+      int count = 0;
+      for(int c=0; c<M; c++) {
+        for(int r=1; r<N; r++) {
+          if(strs[r-1][c] > strs[r][c]) {
+            count++; 
+            break;
+          }
         }
       }
-      else {
-        bool isCase = word.size() > 1 && isSmall(word[1]);
-        for(int i=2; i<word.size(); i++)  {
-          if(isCase != isSmall(word[i])) return false;
-        }
-      }
-      return true;
-    }
-
-    bool isSmall(char ch) {
-      return ch >= 'a' && ch <= 'z';
+      return count;
     }
 };
 
-
 int main() {
-  string word = "USA";
-  cout << Solution().detectCapitalUse(word) << endl;
+  vector<string> strs = {"zyx","wvu","tsr"};
+  cout << Solution().minDeletionSize(strs) << endl;
   return 0;
 }
