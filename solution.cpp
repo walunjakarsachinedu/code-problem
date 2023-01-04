@@ -3,27 +3,30 @@
 using namespace std;
 
 
-// 944. Delete Columns to Make Sorted
+// 2244. Minimum Rounds to Complete All Tasks
 class Solution {
 public:
-    int minDeletionSize(vector<string>& strs) {
-      int N = strs.size();
-      int M = strs[0].size();
-      int count = 0;
-      for(int c=0; c<M; c++) {
-        for(int r=1; r<N; r++) {
-          if(strs[r-1][c] > strs[r][c]) {
-            count++; 
-            break;
-          }
+    int minimumRounds(vector<int>& tasks) {
+      unordered_map<int, int> freq;
+      for(int& task : tasks) ++freq[task];
+      
+      int rounds(0);
+      for(auto [_, f] : freq) {
+        if(f % 3 == 1 && f > 1) {
+          ++rounds;
+          f -= 2;
         }
-      }
-      return count;
+        rounds += f / 3;
+        int remainder(f % 3);
+        if(remainder == 1) return -1;
+        rounds += remainder / 2;
+      }    
+      return rounds;
     }
 };
 
 int main() {
-  vector<string> strs = {"zyx","wvu","tsr"};
-  cout << Solution().minDeletionSize(strs) << endl;
+  vector<int> tasks = {2,2,3,3,2,4,4,4,4,4};
+  cout << Solution().minimumRounds(tasks) << endl;
   return 0;
 }
