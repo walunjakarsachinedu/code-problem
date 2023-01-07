@@ -1,18 +1,19 @@
-### 2244. Minimum Rounds to Complete All Tasks
+### 134. Gas Station
 
 <br/>
 
-**Main idea to solve**:   
-&emsp;n is natural number.   
-&emsp;(n%3) can output 0, 1, 2  
-&emsp;if n%3 == 0 then (n-2)%3 gives 1   
-&emsp;if n%3 == 1 then (n-2)%3 gives 2   
-&emsp;if n%3 == 2 then (n-2)%3 gives 0   
+**Main idea to solve**:
+#### finding the subArray in circular array with max sum
+```
+use first for loop for finding max sum in array using kadane's algorithm.
+then use second for loop for iterating remaining part of array (rotated part) & again apply kadane's algorithm.
+```
 
+<br/><br/>
 
 #### Algorithm: 
 ```
-for each number in tasks     
-  find minimum size array contains any number of 2 & 3 and whose sum is equal to that number.
-  result += size of array;
+newArray = gas - cost;
+find range of subArray with maxSum in newArray;
+return starting index of that range;
 ```
