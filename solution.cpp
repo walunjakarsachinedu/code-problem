@@ -12,25 +12,20 @@ struct TreeNode {
     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
 };
 
-// 144. Binary Tree Preorder Traversal
+// 100. Same Tree
 class Solution {
 public:
-  vector<int> preorderTraversal(TreeNode* root) {
-  vector<int> ans;
-    preOrder(root, ans);
-    return ans;
-  }
-
-  void preOrder(TreeNode* root, vector<int>& node) {
-    if(root==NULL) return;
-    node.push_back(root->val);
-    preOrder(root->left, node);
-    preOrder(root->right, node);
+  bool isSameTree(TreeNode* p, TreeNode* q) {
+    if((p==NULL) != (q==NULL)) return false;
+    if(p==NULL) return true;
+    return (p->val == q->val) && 
+      isSameTree(p->left, q->left) && 
+      isSameTree(p->right, q->right);
   }
 };
 
 int main() {
   TreeNode* root = new TreeNode(1, NULL, new TreeNode(2, new TreeNode(3), NULL));
-  cout << Solution().preorderTraversal(root) << endl;
+  cout << Solution().isSameTree(root, root) << endl;
   return 0;
 }
