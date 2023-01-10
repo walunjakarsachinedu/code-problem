@@ -3,7 +3,6 @@
 using namespace std;
 
 
-// 144. Binary Tree Preorder Traversal
 struct TreeNode {
     int val;
     TreeNode *left;
@@ -13,6 +12,7 @@ struct TreeNode {
     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
 };
 
+// 144. Binary Tree Preorder Traversal
 class Solution {
 public:
   vector<int> preorderTraversal(TreeNode* root) {
