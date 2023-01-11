@@ -2,30 +2,33 @@
 #include "print.cpp"
 using namespace std;
 
-
-struct TreeNode {
-    int val;
-    TreeNode *left;
-    TreeNode *right;
-    TreeNode() : val(0), left(nullptr), right(nullptr) {}
-    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
-    TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
-};
-
-// 100. Same Tree
+// 1443. Minimum Time to Collect All Apples in a Tree
 class Solution {
 public:
-  bool isSameTree(TreeNode* p, TreeNode* q) {
-    if((p==NULL) != (q==NULL)) return false;
-    if(p==NULL) return true;
-    return (p->val == q->val) && 
-      isSameTree(p->left, q->left) && 
-      isSameTree(p->right, q->right);
+  int minTime(int n, vector<vector<int>>& edges, vector<bool>& hasApple) {
+    vector<vector<int>> adj(n);
+    for(auto& edge : edges) {
+      adj[edge[0]].push_back(edge[1]);
+      adj[edge[1]].push_back(edge[0]);
+    }
+    return dfs(0, -1, adj, hasApple);
+  }
+
+  int dfs(int root, int parent, vector<vector<int>>& adj, vector<bool>& hasApple) {
+    int time = 0;
+    for(int nei : adj[root]) {
+      if(nei == parent) continue;
+      int seconds = dfs(nei, root, adj, hasApple);
+      if(seconds != 0 || hasApple[nei]) time += 2 + seconds;
+    }
+    return time;
   }
 };
 
 int main() {
-  TreeNode* root = new TreeNode(1, NULL, new TreeNode(2, new TreeNode(3), NULL));
-  cout << Solution().isSameTree(root, root) << endl;
+  int n = 7;
+  vector<vector<int>> edges = {{0,1},{0,2},{1,4},{1,5},{2,3},{2,6}};
+  vector<bool> hasApple = {false,false,true,false,true,true,false};
+  cout << Solution().minTime(n, edges, hasApple) << endl;
   return 0;
 }
