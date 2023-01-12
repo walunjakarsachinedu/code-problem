@@ -9,11 +9,18 @@ using namespace std;
 template<class T>
 ostream& operator<<(ostream& out, const vector<T>& values);
 
+template<class T, size_t N>
+ostream& operator<<(ostream& out, const array<T, N>& values);
+
 template<class T>
 ostream& operator<<(ostream& out, const set<T>& values);
+template<class T>
+ostream& operator<<(ostream& out, const unordered_set<T>& values);
 
 template<class K, class V>
 ostream& operator<<(ostream& out, const map<K, V>& values);
+template<class K, class V>
+ostream& operator<<(ostream& out, const unordered_map<K, V>& values);
 
 template<class K, class V>
 ostream& operator<<(ostream& out, const pair<K,V>& value);
@@ -34,6 +41,15 @@ ostream& operator<<(ostream& out, const vector<T>& values) {
     out<<"]";
     return out;
 }
+
+template<class T, size_t N>
+ostream& operator<<(ostream& out, const array<T, N>& values) {
+    out << "[";
+    for(int i=0; i<N; ++i) out << values[i] << ", ";
+    if(N) out << "\b\b";
+    out << "]";
+    return out;
+}
   
 template<class T>
 ostream& operator<<(ostream& out, const set<T>& values) {
@@ -43,9 +59,25 @@ ostream& operator<<(ostream& out, const set<T>& values) {
     out<<"}";
     return out;
 }
+template<class T>
+ostream& operator<<(ostream& out, const unordered_set<T>& values) {
+    out<<"{";
+    for(auto value : values) out<<value<<", ";
+    if(values.size()) out<<"\b\b";
+    out<<"}";
+    return out;
+}
 
 template<class K, class V>
 ostream& operator<<(ostream& out, const map<K, V>& values) {
+    out<<"{";
+    for(auto value : values) out<<value.first<<"="<<value.second<<", ";
+    if(values.size()) out<<"\b\b";
+    out<<"}";
+    return out;
+}
+template<class K, class V>
+ostream& operator<<(ostream& out, const unordered_map<K, V>& values) {
     out<<"{";
     for(auto value : values) out<<value.first<<"="<<value.second<<", ";
     if(values.size()) out<<"\b\b";

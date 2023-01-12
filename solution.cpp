@@ -3,23 +3,26 @@
 using namespace std;
 
 
+// 198. House Robber
 class Solution {
 public:
-    int minCostClimbingStairs(vector<int>& cost) {
-        int n= cost.size();
-        int one=0, two=0;
-        for(int i=cost.size()-1;i>-1;i--) {
-            int tmp = one;
-            one = min(one, two) + cost[i];
-            two = tmp;
-        }
-        return min(one,two);
-    }
+  int rob(vector<int>& nums) {
+    vector<int> cache(nums.size(), -1);
+    return dp(0, nums, cache);
+  }
+
+  int dp(int i, vector<int>& nums, vector<int>& cache) {
+    if(i >= nums.size()) return 0;
+    if(cache[i] != -1) return cache[i];
+
+    int include = dp(i+2, nums, cache) + nums[i];
+    int skip = dp(i+1, nums, cache);
+    return cache[i] = max(skip, include);
+  }
 };
 
 int main() {
-    Solution s;
-    vector<int> cost = {1,100,1,1,1,100,1,1,100,1};
-    cout<<s.minCostClimbingStairs(cost)<<endl;
-    return 0;
+  vector<int> nums = {1,2,3,1};
+  cout << Solution().rob(nums) << endl;
+  return 0;
 }
