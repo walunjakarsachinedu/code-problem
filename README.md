@@ -1,4 +1,4 @@
-### 1443. Minimum Time to Collect All Apples in a Tree
+### 1519. Number of Nodes in the Sub-Tree With the Same Label
 
 <br/>
 
@@ -6,9 +6,14 @@
 
 #### Algorithm: 
 ```
-function minTime(root)
-  time = 0;
-  for each neighbour of root
-    if(neighbour is apple || neighbours subTree contains apple) time += 2 + minTime(nei);
-  return time;
+// label_nodes: map {label_name : [all ancestor node with label equal to label_name]}
+// ans: stores number of nodes in sub-tree with same label
+
+function countSubTrees(root):
+  label_nodes[labels[root]].append(root); 
+  for each node in label_node[labels[root]]: ++ans[node];
+  for each neighbour of root: countSubTrees(neighbour);
+  label_nodes[labels[root]].remove(root); 
+
+  return ans;
 ```
