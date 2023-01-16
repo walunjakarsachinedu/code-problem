@@ -2,38 +2,35 @@
 #include "print.cpp"
 using namespace std;
 
-// 1519. Number of Nodes in the Sub-Tree With the Same Label
+// 2246. Longest Path With Different Adjacent Characters
 class Solution {
 public:
-  vector<int> countSubTrees(int n, vector<vector<int>>& edges, string labels) {
-    unordered_map<char, vector<int>> ch_node; // ch -> [node]
-    vector<int> ans(n, 0);
-    vector<vector<int>> adj(n);
+  int longestPath(vector<int>& parent, string s) {
+    vector<vector<int>> adj(parent.size());
+    for(int i=1; i<parent.size(); i++) adj[i].push_back(parent[i]), adj[parent[i]].push_back(i);    
 
-    for(auto edge: edges) {
-      adj[edge[0]].push_back(edge[1]); 
-      adj[edge[1]].push_back(edge[0]); 
-    }
-
-    dfs(0, -1, adj, labels, ch_node, ans);
-    return ans;
+    vector<int> maxPath(parent.size(),0);
+    dfs(0, -1, adj, s, maxPath);
+    return *max_element(maxPath.begin(), maxPath.end());
   }
-
-  void dfs(int root, int parent, vector<vector<int>>& adj, string& labels,  
-    unordered_map<char, vector<int>>& ch_node, vector<int>& ans) {
-
-      ch_node[labels[root]].push_back(root);
-      for(int node : ch_node[labels[root]]) ++ans[node];
-      for(int node : adj[root]) if(node!=parent) 
-        dfs(node, root, adj, labels, ch_node, ans);
-      ch_node[labels[root]].pop_back();
+  
+  int dfs(int node, int parent, vector<vector<int>>& adj, string& s, vector<int>& maxpath) {
+    int p1=0, p2=0;
+    for(int nei: adj[node]) {
+      if(nei == parent) continue;
+      int tmp = dfs(nei, node, adj, s, maxpath) + 1;
+      if(s[nei] == s[node]) continue;
+      if(tmp > p1) p2 = p1, p1 = tmp;
+      else if(tmp > p2) p2 = tmp;
+    }
+    maxpath[node] = p1 + p2 + 1; 
+    return max(p1, p2);
   }
 };
 
 int main() {
-  int n = 7;
-  vector<vector<int>> edges = {{0,1},{0,2},{1,4},{1,5},{2,3},{2,6}};
-  string labels = "abaedcd";
-  cout << Solution().countSubTrees(n, edges, labels) << endl;
+  vector<int> parent = {-1,0,0,0};
+  string s = "aabc";
+  cout << Solution().longestPath(parent, s) << endl;
   return 0;
 }
