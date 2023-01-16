@@ -2,74 +2,64 @@
 #include "print.cpp"
 using namespace std;
 
-// 1061. Lexicographically Smallest Equivalent String
-class OptimizedSolution {
+class UnionFind;
+class UnionFind {
+  vector<int> graph;
+  vector<int> rank;
 public:
-  string smallestEquivalentString(string s1, string s2, string baseStr) {
-    vector<int> graph(26);
-    for(int i=0; i<26; i++) graph[i] = i;
-
-    for(int i=0; i<s1.size(); i++) unions(s1[i], s2[i], graph);
-    
-    string s;
-    for(char ch : baseStr) s += find(ch, graph);
-    return s;
+  UnionFind(int n) {
+    rank = vector<int>(n, 0);
+    graph = vector<int>(n);
+    for(int i=0; i<n; i++) graph[i] = i;
   }
 
-private:
-  int find(char ch, vector<int>& graph) {
-    ch = ch - 'a';
-    while(ch != graph[ch]) ch = graph[ch] = graph[graph[ch]];
-    return ch + 'a';
+  int find(int node) {
+    while(node != graph[node]) node = graph[node] = graph[graph[node]];
+    return node;
   }
 
-  void unions(char ch1, char ch2, vector<int>& graph) {
-    ch1 = find(ch1, graph) - 'a';
-    ch2 = find(ch2, graph) - 'a';
-    if(ch1 == ch2) return;
-    if(ch1 <= ch2) graph[ch2] = ch1;
-    else graph[ch1] = ch2;
-  }
+  void unions(int n1, int n2) {
+    n1 = find(n1);
+    n2 = find(n2);
+    if(n1 == n2) return;
+    if(rank[n1] >= rank[n2]) graph[n2] = n1, ++rank[n1];
+    else graph[n1] = n2, ++rank[n2];
+  }  
 };
 
-
-class Solution { // without using union-find algorithm
+// 2421. Number of Good Paths
+class Solution {
 public:
-  string smallestEquivalentString(string s1, string s2, string baseStr) {
-    unordered_map<char, set<char>> adj;
-    for(int i=0; i<s1.size(); i++) adj[s1[i]].insert(s2[i]), adj[s2[i]].insert(s1[i]);
-
-    vector<set<char>> eq_ch; // list of set of equivalent characters
-    set<char> visited;
-    for(auto ch : s1) {
-      if(visited.count(ch)) continue;
-      eq_ch.push_back(set<char>());
-      set<char>& tmp = eq_ch.back();
-      dfs(ch, adj, tmp);
-      visited.insert(tmp.begin(), tmp.end());
+  int numberOfGoodPaths(vector<int>& vals, vector<vector<int>>& edges) {
+    vector<vector<int>> adj(vals.size());
+    for(auto& edge : edges) {
+      adj[edge[0]].push_back(edge[1]);
+      adj[edge[1]].push_back(edge[0]);
     }
 
-    unordered_map<char, char> mp;
-    for(auto s : eq_ch) {
-      char min_char = *s.begin();
-      for(auto ch : s) mp[ch] = min_char;
+    map<int, vector<int>> valToIndex; // vals -> [node]
+    for(int i=0; i<vals.size(); i++) valToIndex[vals[i]].push_back(i);
+
+    UnionFind unionFind(vals.size());
+    
+    int result = 0;
+    for(auto& [val, indexes] : valToIndex) {
+      for(int node : indexes) for(int nei : adj[node]) if(vals[nei] <= vals[node]) unionFind.unions(nei, node);
+      unordered_map<int, vector<int>> groups; // group -> [group node member]
+      for(int node : indexes) groups[unionFind.find(node)].push_back(node);
+      for(auto& [group, members] : groups) result += countGoodPaths(members.size());
     }
-
-    string minStr;
-    for(auto ch : baseStr) minStr += (mp.count(ch)) ? mp[ch] : ch;
-
-    return minStr;
+    return result;
   }
 
-  void dfs(char node, unordered_map<char, set<char>>& adj, set<char>& visited) {
-    if(visited.count(node)) return;
-    visited.insert(node);
-    for(auto nei : adj[node]) dfs(nei, adj, visited);
+  int countGoodPaths(int count) {
+    return count + count * (count - 1) / 2;
   }
 };
 
 int main() {
-  string s1 = "parker", s2 = "morris", baseStr = "parser";
-  cout << OptimizedSolution().smallestEquivalentString(s1, s2, baseStr) << endl;
+  vector<int> vals = {1,1,2,2,3}; 
+  vector<vector<int>> edges = {{0,1},{1,2},{2,3},{2,4}};
+  cout << Solution().numberOfGoodPaths(vals, edges) << endl;
   return 0;
 }
